@@ -1,0 +1,2508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>The Willow · Dream Archive</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Special+Elite&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --rose:#e8b4c0;--sage:#a8c4b0;--lav:#c8b4e0;--peach:#f0c8a8;
+  --pm:#fdf8f2;--pm2:#f5ece2;--ptxt:#4a3840;--psub:#8a7080;
+  --hbg:#06040a;--hbg2:#0d0810;--red:#8b1a2a;--bone:#e8ddd0;--dim:#5a4858;
+  --gold:#c8a860;
+}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--pm);cursor:none;font-family:'Cormorant Garamond',Georgia,serif;}
+
+/* CURSOR */
+#cur{position:fixed;pointer-events:none;z-index:9999;}
+#cd{width:7px;height:7px;border-radius:50%;background:#4a3840;position:absolute;transform:translate(-50%,-50%);transition:background .3s;}
+#cr{width:26px;height:26px;border-radius:50%;border:1px solid rgba(232,180,192,.5);position:absolute;transform:translate(-50%,-50%);transition:width .15s,height .15s,opacity .2s;}
+html.horror #cd{background:var(--red);}
+html.horror #cr{border-color:rgba(139,26,42,.45);}
+
+/* ATMOSPHERE */
+.grain{position:fixed;inset:0;pointer-events:none;z-index:200;opacity:0;transition:opacity .8s;}
+html.horror .grain{opacity:.04;}
+.grain::after{content:'';position:absolute;inset:-50%;width:200%;height:200%;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.4'/%3E%3C/svg%3E");animation:gr .12s steps(1) infinite;}
+@keyframes gr{0%{transform:translate(0,0)}50%{transform:translate(2%,-3%)}100%{transform:translate(-2%,2%)}}
+.vig{position:fixed;inset:0;pointer-events:none;z-index:100;transition:background .9s;background:radial-gradient(ellipse at 50% 50%,transparent 40%,rgba(6,4,10,0) 100%);}
+html.horror .vig{background:radial-gradient(ellipse at 50% 50%,transparent 32%,rgba(6,4,10,.75) 100%);}
+.stear{position:fixed;inset:0;pointer-events:none;z-index:300;opacity:0;}
+html.horror .stear{animation:tear .1s steps(1) infinite;}
+@keyframes tear{0%,93%{opacity:0}94%{opacity:1;background:linear-gradient(transparent 44%,rgba(139,26,42,.65) 45%,rgba(139,26,42,.65) 47%,transparent 48%)}96%{background:linear-gradient(transparent 77%,rgba(232,221,208,.2) 78%,rgba(232,221,208,.2) 79%,transparent 80%)}97%,100%{opacity:0}}
+
+/* TRANSITION OVERLAY */
+#tov{position:fixed;inset:0;z-index:600;pointer-events:none;display:none;background:var(--hbg);}
+#tov.in{display:block;animation:tovA 1.1s forwards;}
+@keyframes tovA{0%{opacity:0;filter:saturate(6) contrast(4)}20%{opacity:1;filter:hue-rotate(90deg) brightness(2.5)}45%{filter:none;opacity:1}70%{opacity:.85}100%{opacity:0}}
+.gll{position:absolute;height:2px;background:var(--red);left:0;right:0;animation:glA .07s steps(1) infinite;}
+@keyframes glA{0%{top:15%}25%{top:55%}50%{top:82%}75%{top:30%}100%{top:63%}}
+
+/* GHOST BTN */
+#gbt{position:fixed;display:none;z-index:850;font-family:'Special Elite',cursive;font-size:.62rem;color:rgba(139,26,42,.5);background:rgba(6,4,10,.9);border:1px solid rgba(139,26,42,.15);padding:.3rem .65rem;border-radius:2px;pointer-events:none;letter-spacing:.14em;animation:gbf 4s ease-out forwards;}
+@keyframes gbf{0%{opacity:0}15%{opacity:1}80%{opacity:.75}100%{opacity:0}}
+
+/* ── INTERROGATION OVERLAY ── */
+#introg{position:fixed;inset:0;z-index:900;background:rgba(3,2,6,.97);display:none;flex-direction:column;align-items:center;justify-content:center;padding:2rem;text-align:center;}
+#introg.open{display:flex;animation:introgIn .6s ease-out;}
+@keyframes introgIn{from{opacity:0;filter:brightness(3)}to{opacity:1;filter:none}}
+.ig-entity{font-size:3rem;margin-bottom:1rem;animation:igFloat 2.5s ease-in-out infinite;filter:grayscale(1) brightness(.4);}
+@keyframes igFloat{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+.ig-q{font-family:'Special Elite',cursive;font-size:.65rem;letter-spacing:.4em;color:var(--red);opacity:.6;text-transform:uppercase;margin-bottom:.6rem;}
+.ig-title{font-family:'Playfair Display',serif;font-weight:400;font-size:clamp(1.3rem,4vw,2rem);color:var(--bone);margin-bottom:.6rem;line-height:1.1;}
+.ig-sub{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.88rem;color:var(--dim);margin-bottom:1.8rem;line-height:1.7;max-width:400px;}
+.ig-choices{display:flex;flex-direction:column;gap:.5rem;max-width:360px;width:100%;}
+.ig-choice{padding:.7rem 1.1rem;font-family:'Playfair Display',serif;font-style:italic;font-size:.9rem;color:var(--bone);background:rgba(139,26,42,.07);border:1px solid rgba(139,26,42,.2);border-radius:2px;cursor:pointer;transition:all .25s;text-align:left;}
+.ig-choice:hover{background:rgba(139,26,42,.15);border-color:rgba(139,26,42,.45);transform:translateX(4px);}
+.ig-result{display:none;background:rgba(139,26,42,.06);border:1px solid rgba(139,26,42,.18);border-radius:2px;padding:.9rem 1.3rem;max-width:400px;margin:0 auto 1rem;}
+.ig-result.show{display:block;}
+.ig-result-txt{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.87rem;color:var(--bone);line-height:1.75;}
+.ig-close{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.75rem;color:var(--dim);background:none;border:none;cursor:pointer;margin-top:.8rem;letter-spacing:.15em;transition:color .2s;}
+.ig-close:hover{color:var(--bone);}
+
+/* ── SECRET FILE ── */
+.secret-file{background:rgba(15,8,18,.8);border:1px solid rgba(139,26,42,.12);border-radius:3px;padding:.9rem 1.1rem;margin-bottom:.6rem;cursor:pointer;transition:all .3s;font-family:'Special Elite',cursive;font-size:.7rem;letter-spacing:.25em;color:rgba(139,26,42,.4);text-align:center;}
+.secret-file:hover{border-color:rgba(139,26,42,.35);color:rgba(139,26,42,.7);}
+.secret-file.unlocked{color:var(--bone);border-color:rgba(200,168,96,.25);background:rgba(200,168,96,.04);}
+.sf-content{display:none;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.82rem;color:var(--dim);line-height:1.75;margin-top:.7rem;text-align:left;}
+.secret-file.unlocked .sf-content{display:block;}
+
+/* ── MIC WHISPER ── */
+#micWhisper{position:fixed;bottom:22%;left:50%;transform:translateX(-50%);z-index:950;font-family:'Special Elite',cursive;font-size:.65rem;letter-spacing:.38em;color:rgba(139,26,42,.8);background:rgba(3,2,6,.9);border:1px solid rgba(139,26,42,.2);padding:.35rem .9rem;border-radius:2px;display:none;pointer-events:none;text-transform:uppercase;animation:mwFade 3s ease-out forwards;}
+@keyframes mwFade{0%{opacity:0;transform:translateX(-50%) scale(.92)}10%{opacity:1;transform:translateX(-50%) scale(1)}80%{opacity:.9}100%{opacity:0;transform:translateX(-50%)}}
+
+/* ── CORRUPTION EVENT OVERLAY ── */
+#corrEvent{position:fixed;inset:0;z-index:700;pointer-events:none;display:none;}
+#corrEvent.invisible-notes{background:rgba(5,3,10,.0);}
+#corrEvent.swap-hint{background:transparent;}
+.swap-banner{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Special Elite',cursive;font-size:.68rem;letter-spacing:.35em;color:rgba(139,26,42,.75);background:rgba(3,2,6,.88);border:1px solid rgba(139,26,42,.2);padding:.4rem .9rem;border-radius:2px;text-transform:uppercase;animation:sbFlash .5s ease-out;}
+@keyframes sbFlash{0%{opacity:0}20%{opacity:1}80%{opacity:1}100%{opacity:0}}
+
+/* ── MEMORY INTEGRITY BAR ── */
+.integrity-bar{position:absolute;top:56px;right:8px;bottom:66px;width:3px;background:rgba(200,168,96,.08);border-radius:2px;z-index:20;}
+.integrity-fill{position:absolute;bottom:0;left:0;right:0;border-radius:2px;background:linear-gradient(0deg,var(--gold),#e8d8a0);transition:height .5s,background .5s;}
+
+/* ── AUDIO PATH HELPER in hub ── */
+.audio-path-hint{background:rgba(10,20,14,.6);border:1px solid rgba(138,171,144,.15);border-radius:3px;padding:.8rem 1rem;margin-bottom:.7rem;font-family:'Special Elite',cursive;font-size:.62rem;letter-spacing:.2em;color:#8aab90;line-height:1.9;}
+.audio-path-hint code{background:rgba(138,171,144,.1);padding:1px 5px;border-radius:2px;font-family:'Special Elite',cursive;color:#a8c4a8;}
+
+/* ── CASE FILE panel in hub ── */
+.case-file{background:rgba(15,8,18,.7);border:1px solid rgba(139,26,42,.18);border-radius:3px;padding:1rem 1.2rem;margin-bottom:.7rem;}
+.cf-header{font-family:'Special Elite',cursive;font-size:.6rem;letter-spacing:.38em;color:var(--red);opacity:.55;text-transform:uppercase;margin-bottom:.6rem;padding-bottom:.35rem;border-bottom:1px solid rgba(139,26,42,.1);}
+.cf-row{display:flex;gap:.6rem;margin-bottom:.45rem;align-items:flex-start;}
+.cf-key{font-family:'Special Elite',cursive;font-size:.6rem;letter-spacing:.2em;color:var(--dim);text-transform:uppercase;min-width:70px;opacity:.6;}
+.cf-val{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.82rem;color:var(--bone);opacity:.8;line-height:1.5;}
+.cf-val.redacted{color:rgba(139,26,42,.5);letter-spacing:.1em;}
+.cf-suspect{display:inline-block;padding:1px 7px;border-radius:2px;font-size:.65rem;margin-right:.3rem;margin-bottom:.2rem;border:1px solid;}
+.cf-s-perf{border-color:rgba(139,26,42,.3);color:var(--rose);background:rgba(139,26,42,.08);}
+.cf-s-vael{border-color:rgba(90,80,70,.3);color:var(--bone);background:rgba(90,80,70,.08);}
+.cf-s-you{border-color:rgba(200,168,96,.25);color:var(--gold);background:rgba(200,168,96,.05);}
+.cf-s-arch{border-color:rgba(90,60,90,.3);color:var(--lav);background:rgba(90,60,90,.08);}
+
+/* ── HEARTBEAT INDICATOR ── */
+.hb-ind{position:absolute;top:60px;right:18px;font-family:'Special Elite',cursive;font-size:.5rem;letter-spacing:.25em;color:rgba(139,26,42,.4);z-index:20;pointer-events:none;text-transform:uppercase;}
+.hb-ind span{display:inline-block;animation:hbPulse var(--hbms,1s) ease-in-out infinite;}
+@keyframes hbPulse{0%,100%{opacity:.3;transform:scale(1)}50%{opacity:.9;transform:scale(1.3)}}
+
+/* ── VISUAL RHYTHM CUES (Melatonin-style) ── */
+.vcue{position:absolute;pointer-events:none;z-index:6;animation:vcuePop ease-out forwards;}
+@keyframes vcuePop{0%{opacity:0;transform:translate(-50%,-50%) scale(.4)}25%{opacity:1;transform:translate(-50%,-50%) scale(1.15)}60%{opacity:.8;transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(-50%,-50%) scale(.85)}}
+.vcue-flower{font-size:1.6rem;filter:drop-shadow(0 0 8px rgba(232,180,192,.6));}
+.vcue-horror{font-size:1.4rem;filter:drop-shadow(0 0 10px rgba(139,26,42,.7));}
+/* Scene character */
+.scene-char{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);font-size:2.2rem;pointer-events:none;z-index:4;transition:transform .1s;}
+.scene-char.nod{transform:translateX(-50%) translateY(-8px) scale(1.12);}
+/* Audio layer badge */
+.layer-badge{position:absolute;top:8px;left:50%;transform:translateX(-50%);font-family:'Special Elite',cursive;font-size:.5rem;letter-spacing:.3em;color:rgba(139,26,42,.45);pointer-events:none;z-index:18;text-transform:uppercase;opacity:0;transition:opacity .5s,color .5s;}
+.layer-badge.show{opacity:.7;}
+.layer-badge.layer-hidden{color:rgba(200,168,96,.6);}
+.layer-badge.layer-horror{color:rgba(139,26,42,.85);}
+/* Replay badge */
+.replay-badge{position:absolute;top:8px;right:28px;font-family:'Special Elite',cursive;font-size:.48rem;letter-spacing:.25em;color:rgba(139,26,42,.3);z-index:18;pointer-events:none;text-transform:uppercase;}
+
+/* ── ANIMATED LANE LINES ── */
+.lane-line{position:absolute;top:0;bottom:0;width:1px;pointer-events:none;z-index:3;overflow:hidden;}
+.lane-line::after{content:'';position:absolute;top:-100%;left:0;width:100%;height:60%;background:linear-gradient(180deg,transparent,rgba(200,160,180,.18),transparent);animation:lanePulse 3s ease-in-out infinite;}
+@keyframes lanePulse{0%{top:-100%}100%{top:200%}}
+.ll-0::after{animation-delay:0s;background:linear-gradient(180deg,transparent,rgba(212,168,184,.2),transparent);}
+.ll-1::after{animation-delay:.75s;background:linear-gradient(180deg,transparent,rgba(168,196,160,.2),transparent);}
+.ll-2::after{animation-delay:1.5s;background:linear-gradient(180deg,transparent,rgba(196,184,144,.18),transparent);}
+.ll-3::after{animation-delay:2.25s;background:linear-gradient(180deg,transparent,rgba(160,180,200,.2),transparent);}
+
+/* ── NOTE GLOW TRAIL ── */
+.no{position:absolute;pointer-events:none;z-index:10;width:52px;transform:translateX(-50%);}
+.no::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:2px;height:0;background:inherit;opacity:.3;animation:none;}
+.np{width:52px;height:32px;border-radius:55% 45% 55% 45%/50% 50% 50% 50%;position:relative;display:flex;align-items:center;justify-content:center;transition:filter .05s;}
+.np::after{content:'';position:absolute;top:4px;left:8px;width:13px;height:7px;background:rgba(255,255,255,.22);border-radius:50%;transform:rotate(-15deg);}
+/* Lane colour variants */
+.l0 .np{background:linear-gradient(135deg,#e0b0c4,#b07888);box-shadow:0 0 10px rgba(212,168,184,.35),0 2px 4px rgba(0,0,0,.3);}
+.l1 .np{background:linear-gradient(135deg,#b0c8a0,#6a9060);box-shadow:0 0 10px rgba(168,196,160,.35),0 2px 4px rgba(0,0,0,.3);}
+.l2 .np{background:linear-gradient(135deg,#d0c090,#988050);box-shadow:0 0 10px rgba(196,184,144,.35),0 2px 4px rgba(0,0,0,.3);}
+.l3 .np{background:linear-gradient(135deg,#a8b8cc,#607888);box-shadow:0 0 10px rgba(160,180,200,.35),0 2px 4px rgba(0,0,0,.3);}
+/* Horror note */
+.no.hn .np{background:linear-gradient(135deg,#c85060,#6a1828)!important;box-shadow:0 0 18px rgba(139,26,42,.7),0 0 6px rgba(200,80,96,.4)!important;animation:horrorPulse 1s ease-in-out infinite;}
+@keyframes horrorPulse{0%,100%{box-shadow:0 0 18px rgba(139,26,42,.7),0 0 6px rgba(200,80,96,.4)}50%{box-shadow:0 0 28px rgba(139,26,42,.9),0 0 14px rgba(200,80,96,.6)}}
+.no.hn .np::before{content:'';position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);width:2px;height:10px;background:linear-gradient(180deg,#8b1a2a,transparent);border-radius:0 0 2px 2px;}
+.ll{position:absolute;bottom:-16px;left:50%;transform:translateX(-50%);font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.58rem;color:var(--bone);opacity:.45;white-space:nowrap;}
+
+/* ── HIT BLOOM EFFECTS ── */
+.hb{position:absolute;pointer-events:none;z-index:15;font-family:'Playfair Display',serif;font-style:italic;animation:hbu .62s ease-out forwards;transform:translateX(-50%);}
+@keyframes hbu{0%{opacity:1;transform:translateX(-50%) translateY(0) scale(.7)}55%{opacity:.9;transform:translateX(-50%) translateY(-32px) scale(1.2)}100%{opacity:0;transform:translateX(-50%) translateY(-64px) scale(1.3)}}
+.hbp{color:#f0c8d4;font-size:1.4rem;text-shadow:0 0 14px rgba(240,180,200,.8);}
+.hbg{color:#b0d098;font-size:1.1rem;text-shadow:0 0 10px rgba(176,208,152,.6);}
+.hbm{color:#8b1a2a;font-size:1rem;text-shadow:0 0 8px rgba(139,26,42,.5);}
+/* Particle burst on perfect */
+.hit-particle{position:absolute;pointer-events:none;z-index:14;width:5px;height:5px;border-radius:50%;animation:partFly ease-out forwards;}
+@keyframes partFly{0%{opacity:1;transform:translate(0,0) scale(1)}100%{opacity:0;transform:translate(var(--px),var(--py)) scale(0)}}
+
+/* ── LYRIC WHISPER ── */
+.lw{position:absolute;bottom:15px;left:50%;transform:translateX(-50%);font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1rem;color:var(--bone);opacity:0;pointer-events:none;white-space:nowrap;letter-spacing:.06em;transition:opacity .25s;text-shadow:0 0 18px rgba(139,26,42,.45);}
+.lw.sv{opacity:.45;}.lw.lt{opacity:.95;color:#f0c0cc;}
+
+/* ── HIT ZONE ── */
+.hz{position:absolute;bottom:5px;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,rgba(139,26,42,.1) 15%,rgba(139,26,42,.35) 50%,rgba(139,26,42,.1) 85%,transparent);box-shadow:0 0 12px rgba(139,26,42,.2);}
+
+/* ── COMBO BURST ── */
+.combo-burst{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Playfair Display',serif;font-style:italic;pointer-events:none;z-index:16;animation:cburst .8s ease-out forwards;color:rgba(240,200,212,.5);}
+@keyframes cburst{0%{opacity:0;transform:translate(-50%,-50%) scale(.6)}25%{opacity:.9;transform:translate(-50%,-50%) scale(1.1)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.5)}}
+
+/* ── IDLE WHISPER ── */
+#idleWhisper{position:fixed;top:38%;left:50%;transform:translateX(-50%);z-index:960;font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(.9rem,2.5vw,1.2rem);color:rgba(232,221,208,.55);pointer-events:none;display:none;text-align:center;letter-spacing:.06em;text-shadow:0 0 30px rgba(139,26,42,.4);animation:iwFade 4s ease-out forwards;}
+@keyframes iwFade{0%{opacity:0;transform:translateX(-50%) translateY(8px)}15%{opacity:1;transform:translateX(-50%) translateY(0)}75%{opacity:.9}100%{opacity:0;transform:translateX(-50%) translateY(-6px)}}
+
+/* ── UI DRIFT ── */
+@keyframes btnDrift{0%,100%{transform:translateX(0) translateY(0)}33%{transform:translateX(1.5px) translateY(-1px)}66%{transform:translateX(-1px) translateY(.5px)}}
+html.horror .h-btn:not(:hover){animation:btnDrift 8s ease-in-out infinite;}
+html.horror .h-btn:nth-child(2):not(:hover){animation-delay:-2.5s;}
+html.horror .h-btn:nth-child(3):not(:hover){animation-delay:-5s;}
+
+/* ── FAKE CRASH ── */
+#fakeCrash{position:fixed;inset:0;z-index:1100;background:#000;display:none;flex-direction:column;align-items:center;justify-content:center;font-family:'Special Elite',cursive;font-size:.7rem;letter-spacing:.3em;color:rgba(139,26,42,.5);text-transform:uppercase;text-align:center;gap:.8rem;}
+#fakeCrash.show{display:flex;}
+.fc-title{font-size:1.1rem;color:rgba(232,221,208,.6);margin-bottom:.3rem;}
+.fc-sub{opacity:.4;line-height:2;}
+
+/* ── TRUTH/PERFORMANCE BANNER ── */
+.tp-banner{background:rgba(139,26,42,.07);border:1px solid rgba(139,26,42,.18);border-radius:2px;padding:.6rem 1rem;margin-bottom:.7rem;max-width:400px;margin-left:auto;margin-right:auto;text-align:center;}
+.tp-type{font-family:'Special Elite',cursive;font-size:.58rem;letter-spacing:.35em;color:var(--red);text-transform:uppercase;margin-bottom:.25rem;}
+.tp-text{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.85rem;color:var(--bone);opacity:.8;line-height:1.6;}
+
+/* ── UPLOAD FORMAT PILLS ── */
+.upload-warn{background:rgba(139,26,42,.06);border:1px solid rgba(139,26,42,.15);border-radius:3px;padding:.65rem .9rem;margin-top:.5rem;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.76rem;color:var(--dim);line-height:1.7;}
+.upload-warn strong{font-style:normal;color:var(--bone);font-weight:400;}
+.upload-format-row{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.4rem;}
+.uf-pill{font-family:'Special Elite',cursive;font-size:.55rem;letter-spacing:.2em;padding:2px 8px;border-radius:2px;border:1px solid;}
+.uf-good{border-color:rgba(138,171,144,.3);color:#8aab90;background:rgba(138,171,144,.06);}
+.uf-bad{border-color:rgba(139,26,42,.2);color:rgba(139,26,42,.6);background:rgba(139,26,42,.04);}
+.uf-warn{border-color:rgba(200,168,96,.25);color:var(--gold);background:rgba(200,168,96,.04);}
+
+/* ── CORRUPTION BANNER ── */
+#corrEvent{position:fixed;inset:0;z-index:700;pointer-events:none;display:none;}
+.swap-banner{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Special Elite',cursive;font-size:.65rem;letter-spacing:.35em;color:rgba(139,26,42,.8);background:rgba(3,2,6,.92);border:1px solid rgba(139,26,42,.25);padding:.5rem 1.1rem;border-radius:2px;text-transform:uppercase;animation:sbFlash .6s ease-out;}
+@keyframes sbFlash{0%{opacity:0;transform:translate(-50%,-50%) scale(.92)}15%{opacity:1;transform:translate(-50%,-50%) scale(1)}80%{opacity:1}100%{opacity:0}}
+
+/* ── MIC WHISPER ── */
+#micWhisper{position:fixed;bottom:22%;left:50%;transform:translateX(-50%);z-index:950;font-family:'Special Elite',cursive;font-size:.62rem;letter-spacing:.38em;color:rgba(139,26,42,.8);background:rgba(3,2,6,.9);border:1px solid rgba(139,26,42,.2);padding:.35rem .9rem;border-radius:2px;display:none;pointer-events:none;text-transform:uppercase;animation:mwFade 3s ease-out forwards;}
+@keyframes mwFade{0%{opacity:0;transform:translateX(-50%) scale(.92)}10%{opacity:1;transform:translateX(-50%) scale(1)}80%{opacity:.9}100%{opacity:0;transform:translateX(-50%)}}
+
+/* ── INTEGRITY + HP BARS ── */
+.hpt{position:absolute;left:9px;top:62px;bottom:72px;width:3px;background:rgba(61,92,66,.1);border-radius:2px;z-index:20;}
+.hpf{position:absolute;bottom:0;left:0;right:0;border-radius:2px;transition:height .5s,background .5s;background:linear-gradient(0deg,#3d5c42,#8aab90);}
+.integrity-bar{position:absolute;top:56px;right:8px;bottom:66px;width:3px;background:rgba(200,168,96,.08);border-radius:2px;z-index:20;}
+.integrity-fill{position:absolute;bottom:0;left:0;right:0;border-radius:2px;background:linear-gradient(0deg,var(--gold),#e8d8a0);transition:height .5s,background .5s;}
+
+/* ── PULSE BARS ── */
+.pss{position:absolute;bottom:66px;display:flex;flex-direction:column-reverse;gap:2px;pointer-events:none;z-index:8;opacity:.22;}
+.pss.l{left:18px;}.pss.r{right:18px;}
+.pb{width:3px;border-radius:2px;background:linear-gradient(0deg,#8b1a2a,#e8b4c0);min-height:2px;transition:height .04s;}
+
+/* ── HEARTBEAT ── */
+.hb-ind{position:absolute;top:60px;right:22px;font-family:'Special Elite',cursive;font-size:.48rem;letter-spacing:.22em;color:rgba(139,26,42,.35);z-index:20;pointer-events:none;text-transform:uppercase;}
+.hb-ind span{display:inline-block;animation:hbPulse var(--hbms,1s) ease-in-out infinite;}
+@keyframes hbPulse{0%,100%{opacity:.3;transform:scale(1)}50%{opacity:.85;transform:scale(1.35)}}
+
+/* ── DISTORTION INDICATOR ── */
+.di{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Special Elite',cursive;font-size:.56rem;letter-spacing:.36em;color:rgba(139,26,42,.5);pointer-events:none;z-index:400;display:none;text-transform:uppercase;}
+.di.sh{display:block;animation:dia .55s ease-out;}
+@keyframes dia{0%{opacity:1}100%{opacity:0}}
+
+/* ── INTRO / MANUAL SCREEN ── */
+#introScreen{background:var(--hbg);overflow-y:auto;justify-content:flex-start !important;align-items:center !important;padding:3rem 1.5rem 2rem;}
+.intro-wrap{max-width:560px;width:100%;position:relative;z-index:2;}
+.intro-eyebrow{font-family:'Special Elite',cursive;font-size:.58rem;letter-spacing:.42em;color:var(--red);opacity:.5;text-transform:uppercase;margin-bottom:1.2rem;}
+.intro-title{font-family:'Playfair Display',serif;font-weight:400;font-size:clamp(1.5rem,4vw,2.2rem);color:var(--bone);margin-bottom:1.6rem;line-height:1.05;}
+.intro-body{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(.88rem,1.8vw,1rem);color:var(--dim);line-height:2.05;margin-bottom:2.2rem;}
+.intro-body p{margin-bottom:1.1rem;}
+.intro-body p:last-child{margin-bottom:0;}
+.intro-body em{color:rgba(232,221,208,.55);}
+.intro-body strong{font-style:normal;font-weight:400;color:rgba(232,221,208,.75);}
+.intro-proceed{font-family:'Playfair Display',serif;font-style:italic;font-size:.9rem;color:var(--bone);background:none;border:1px solid rgba(139,26,42,.3);padding:.65rem 2.2rem;border-radius:2px;cursor:pointer;transition:all .3s;letter-spacing:.1em;display:block;margin:0 auto;}
+.intro-proceed:hover{background:rgba(139,26,42,.12);border-color:rgba(139,26,42,.55);letter-spacing:.14em;}
+.intro-skip{display:block;text-align:center;margin-top:.8rem;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.7rem;color:var(--dim);opacity:.35;cursor:pointer;background:none;border:none;letter-spacing:.18em;transition:opacity .2s;}
+.intro-skip:hover{opacity:.7;}
+
+/* ── BACKGROUND SHADOW CHARACTER ── */
+.shadow-char{position:absolute;pointer-events:none;z-index:3;opacity:0;transition:opacity .6s;font-size:2rem;filter:brightness(0) opacity(.18);}
+.shadow-char.visible{opacity:1;}
+.shadow-char.fading{opacity:0;}
+
+/* ── CONTRADICTION DETECTION ── */
+#contradictPanel{position:fixed;inset:0;z-index:880;background:rgba(3,2,6,.95);display:none;flex-direction:column;align-items:center;justify-content:center;padding:2rem;text-align:center;}
+#contradictPanel.open{display:flex;animation:cpIn .5s ease-out;}
+@keyframes cpIn{from{opacity:0}to{opacity:1}}
+.cp-eyebrow{font-family:'Special Elite',cursive;font-size:.58rem;letter-spacing:.42em;color:var(--red);opacity:.55;text-transform:uppercase;margin-bottom:.7rem;}
+.cp-title{font-family:'Playfair Display',serif;font-weight:400;font-size:clamp(1.2rem,3vw,1.7rem);color:var(--bone);margin-bottom:.6rem;}
+.cp-sub{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.84rem;color:var(--dim);margin-bottom:1.6rem;line-height:1.7;max-width:440px;}
+.cp-statements{display:flex;flex-direction:column;gap:.6rem;max-width:460px;width:100%;margin-bottom:1.2rem;}
+.cp-stmt{padding:.75rem 1.1rem;border:1px solid rgba(139,26,42,.15);border-radius:2px;background:rgba(20,10,20,.6);cursor:pointer;text-align:left;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.85rem;color:var(--dim);transition:all .25s;display:flex;align-items:center;gap:.7rem;}
+.cp-stmt:hover{border-color:rgba(139,26,42,.4);background:rgba(139,26,42,.06);color:var(--bone);}
+.cp-stmt.marked{border-color:rgba(139,26,42,.6);background:rgba(139,26,42,.1);color:var(--bone);}
+.cp-stmt.correct{border-color:rgba(138,171,144,.5);background:rgba(61,92,66,.08);color:#a8d088;}
+.cp-stmt.wrong{border-color:rgba(180,80,80,.4);background:rgba(100,20,20,.08);color:var(--rose);opacity:.7;}
+.cp-marker{width:16px;height:16px;border-radius:50%;border:1px solid rgba(139,26,42,.35);flex-shrink:0;transition:all .2s;}
+.cp-stmt.marked .cp-marker{background:var(--red);border-color:var(--red);}
+.cp-stmt.correct .cp-marker{background:#5a8a42;border-color:#5a8a42;}
+.cp-result{display:none;background:rgba(139,26,42,.06);border:1px solid rgba(139,26,42,.2);border-radius:2px;padding:.9rem 1.3rem;max-width:440px;width:100%;margin-bottom:1rem;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.84rem;color:var(--bone);line-height:1.7;}
+.cp-result.show{display:block;}
+.cp-btns{display:flex;gap:.7rem;}
+.cp-btn{font-family:'Playfair Display',serif;font-style:italic;font-size:.85rem;color:var(--bone);background:rgba(139,26,42,.07);border:1px solid rgba(139,26,42,.2);padding:.5rem 1.3rem;border-radius:2px;cursor:pointer;transition:all .2s;letter-spacing:.08em;}
+.cp-btn:hover{background:rgba(139,26,42,.15);border-color:rgba(139,26,42,.45);}
+
+/* ── CONSUMED PLAYBACK OVERLAY ── */
+#consumedOverlay{position:fixed;inset:0;z-index:970;background:rgba(3,2,6,.88);display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem;}
+#consumedOverlay.open{display:flex;animation:coIn .8s ease-out;}
+@keyframes coIn{from{opacity:0;filter:brightness(3)}to{opacity:1;filter:none}}
+.co-entity{font-size:3rem;margin-bottom:.8rem;filter:grayscale(1) brightness(.3);animation:coFloat 2.5s ease-in-out infinite;}
+@keyframes coFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.co-title{font-family:'Special Elite',cursive;font-size:.65rem;letter-spacing:.42em;color:var(--red);text-transform:uppercase;margin-bottom:.6rem;opacity:.7;}
+.co-msg{font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(1rem,2.5vw,1.4rem);color:var(--bone);margin-bottom:.5rem;line-height:1.2;}
+.co-sub{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.82rem;color:var(--dim);margin-bottom:1.5rem;line-height:1.7;max-width:380px;}
+.co-close{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.78rem;color:var(--dim);background:none;border:none;cursor:pointer;letter-spacing:.18em;transition:color .2s;}
+.co-close:hover{color:var(--bone);}
+
+/* ── DIRECTIONAL WHISPER ── */
+#dirWhisperL,#dirWhisperR{position:fixed;top:50%;z-index:955;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.82rem;color:rgba(139,26,42,.6);pointer-events:none;display:none;letter-spacing:.08em;text-shadow:0 0 20px rgba(139,26,42,.4);animation:dwFade 3.5s ease-out forwards;}
+#dirWhisperL{left:1.5rem;transform:translateY(-50%);}
+#dirWhisperR{right:1.5rem;transform:translateY(-50%);text-align:right;}
+@keyframes dwFade{0%{opacity:0}12%{opacity:1}70%{opacity:.8}100%{opacity:0}}
+
+/* ── DON'T PLAY EASTER EGG ── */
+#dontPlay{position:fixed;inset:0;z-index:1000;background:rgba(3,2,6,.97);display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem;}
+#dontPlay.open{display:flex;animation:dpIn 1.2s ease-out;}
+@keyframes dpIn{0%{opacity:0}40%{opacity:.4}100%{opacity:1}}
+.dp-text{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(1rem,2.5vw,1.3rem);color:rgba(232,221,208,.45);letter-spacing:.06em;line-height:2;margin-bottom:1.5rem;max-width:380px;}
+.dp-text span{color:rgba(139,26,42,.55);}
+.dp-close{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.75rem;color:var(--dim);background:none;border:none;cursor:pointer;letter-spacing:.2em;opacity:.4;transition:opacity .2s;}
+.dp-close:hover{opacity:.8;}
+
+/* SCREENS */
+.screen{display:none;position:absolute;inset:0;overflow:hidden;}
+.screen.active{display:flex;flex-direction:column;align-items:center;justify-content:center;}
+
+/* ══════════════ HOME ══════════════ */
+#home{background:var(--pm);}
+.fp{position:absolute;border-radius:60% 40% 60% 40%/50% 60% 40% 50%;pointer-events:none;animation:pfl linear infinite;}
+@keyframes pfl{0%{transform:translateY(0) rotate(0deg);opacity:0}10%{opacity:.55}90%{opacity:.25}100%{transform:translateY(-110vh) rotate(540deg);opacity:0}}
+.hi{position:relative;z-index:2;text-align:center;padding:0 1.5rem;max-width:500px;}
+.h-ey{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.75rem;letter-spacing:.45em;color:var(--rose);opacity:.7;margin-bottom:.45rem;}
+.h-tt{font-family:'Playfair Display',serif;font-weight:400;font-size:clamp(2.6rem,8vw,4.8rem);line-height:.93;color:var(--ptxt);}
+.h-tt em{font-style:italic;color:var(--rose);}
+.h-sr{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.74rem;letter-spacing:.32em;color:var(--psub);margin-top:.35rem;opacity:.55;}
+.h-tg{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.88rem;color:var(--psub);margin:1.3rem 0 2rem;line-height:1.8;opacity:.6;}
+.h-nav{display:flex;flex-direction:column;gap:.55rem;width:100%;}
+.h-btn{padding:.75rem 1.5rem;font-family:'Playfair Display',serif;font-weight:400;font-size:.9rem;color:var(--ptxt);background:rgba(255,255,255,.5);border:1.5px solid rgba(200,170,180,.2);border-radius:8px;cursor:pointer;transition:all .3s;text-align:left;display:flex;justify-content:space-between;align-items:center;backdrop-filter:blur(4px);}
+.h-btn:hover{border-color:var(--rose);background:rgba(255,255,255,.82);transform:translateX(4px);}
+.h-btn .hb-r{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.68rem;color:var(--psub);opacity:.55;}
+.h-hint{margin-top:1.6rem;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.62rem;letter-spacing:.22em;color:var(--psub);opacity:.28;}
+
+/* ══════════════ ARCHIVE HUB ══════════════ */
+#hub{background:var(--hbg);overflow-y:auto;}
+#hub::-webkit-scrollbar{width:2px;}#hub::-webkit-scrollbar-thumb{background:rgba(139,26,42,.2);}
+.hub-bg{position:absolute;inset:0;z-index:0;}
+.hub-inner{position:relative;z-index:2;width:100%;max-width:700px;padding:2rem 1.5rem 3rem;margin:0 auto;}
+.hub-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem;}
+.hub-back{background:none;border:none;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.76rem;letter-spacing:.2em;color:var(--dim);cursor:pointer;transition:color .2s;padding:0;}
+.hub-back:hover{color:var(--bone);}
+.hub-title{font-family:'Playfair Display',serif;font-weight:400;font-size:clamp(1.4rem,4vw,2rem);color:var(--bone);letter-spacing:.05em;margin-bottom:.2rem;}
+.hub-sub{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.78rem;color:var(--dim);letter-spacing:.1em;margin-bottom:2rem;}
+/* Story log */
+.story-section{margin-bottom:2.5rem;}
+.ss-label{font-family:'Special Elite',cursive;font-size:.58rem;letter-spacing:.42em;color:var(--red);opacity:.55;text-transform:uppercase;margin-bottom:.9rem;padding-bottom:.4rem;border-bottom:1px solid rgba(139,26,42,.1);}
+.story-entry{background:rgba(20,10,20,.55);border:1px solid rgba(139,26,42,.12);border-radius:3px;padding:.9rem 1.1rem;margin-bottom:.6rem;transition:border-color .2s;position:relative;overflow:hidden;}
+.story-entry::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--red);opacity:0;transition:opacity .2s;}
+.story-entry.unlocked{border-color:rgba(139,26,42,.28);}
+.story-entry.unlocked::before{opacity:.6;}
+.story-entry.locked{opacity:.3;}
+.se-ch{font-family:'Special Elite',cursive;font-size:.57rem;letter-spacing:.35em;color:var(--red);opacity:.5;text-transform:uppercase;margin-bottom:.3rem;}
+.se-t{font-family:'Playfair Display',serif;font-size:.98rem;color:var(--bone);margin-bottom:.3rem;}
+.se-body{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.82rem;color:var(--dim);line-height:1.7;}
+.se-body.revealed{color:rgba(232,221,208,.72);}
+.se-grade{display:inline-block;font-family:'Special Elite',cursive;font-size:.6rem;letter-spacing:.25em;padding:2px 8px;border-radius:2px;margin-top:.5rem;}
+.sg-s{background:rgba(139,26,42,.15);color:var(--rose);}
+.sg-a{background:rgba(90,138,66,.1);color:#a8d088;}
+.sg-b,.sg-c{background:rgba(90,80,70,.15);color:var(--bone);opacity:.6;}
+.sg-f{background:rgba(80,10,20,.2);color:var(--red);}
+.se-play{float:right;background:none;border:1px solid rgba(139,26,42,.2);color:var(--red);font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.7rem;padding:3px 10px;border-radius:2px;cursor:pointer;transition:all .2s;margin-top:2px;}
+.se-play:hover{background:rgba(139,26,42,.1);}
+
+/* Endings shelf */
+.ending-card{background:rgba(15,8,18,.7);border:1px solid rgba(139,26,42,.15);border-radius:3px;padding:1.1rem;margin-bottom:.7rem;transition:all .25s;}
+.ending-card.found{border-color:rgba(200,168,96,.25);background:rgba(200,168,96,.04);}
+.ending-card.locked-end{opacity:.25;}
+.ec-num{font-family:'Special Elite',cursive;font-size:.55rem;letter-spacing:.4em;color:var(--gold);opacity:.6;text-transform:uppercase;margin-bottom:.3rem;}
+.ec-t{font-family:'Playfair Display',serif;font-size:1rem;color:var(--bone);margin-bottom:.3rem;}
+.ec-cond{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.74rem;color:var(--dim);margin-bottom:.4rem;line-height:1.55;}
+.ec-body{font-family:'Cormorant Garamond',serif;font-size:.82rem;color:rgba(232,221,208,.75);line-height:1.75;display:none;}
+.ending-card.found .ec-body{display:block;}
+.ec-lock{font-size:.65rem;color:rgba(139,26,42,.4);font-family:'Special Elite',cursive;letter-spacing:.2em;}
+
+/* Clues / fragments grid */
+.frag-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.6rem;}
+.frag{background:rgba(20,10,20,.6);border:1px solid rgba(139,26,42,.12);border-radius:3px;padding:.8rem;transition:all .2s;}
+.frag.found{border-color:rgba(139,26,42,.35);cursor:pointer;}
+.frag.found:hover{background:rgba(139,26,42,.07);}
+.frag-label{font-family:'Special Elite',cursive;font-size:.54rem;letter-spacing:.3em;color:var(--red);opacity:.5;text-transform:uppercase;margin-bottom:.25rem;}
+.frag-txt{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.8rem;color:var(--dim);line-height:1.55;}
+.frag.found .frag-txt{color:rgba(232,221,208,.7);}
+.frag-hidden::after{content:'░░░░░░░';color:rgba(139,26,42,.25);}
+/* Progress bar */
+.prog-wrap{margin-bottom:2rem;}
+.prog-label{font-family:'Special Elite',cursive;font-size:.56rem;letter-spacing:.35em;color:var(--dim);text-transform:uppercase;margin-bottom:.5rem;display:flex;justify-content:space-between;}
+.prog-track{height:3px;background:rgba(139,26,42,.1);border-radius:2px;overflow:hidden;}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--red),var(--rose));border-radius:2px;transition:width .6s cubic-bezier(.4,0,.2,1);}
+
+/* ══════════════ CHAPTER SELECT ══════════════ */
+#csel{background:var(--hbg);overflow-y:auto;justify-content:flex-start !important;align-items:center !important;padding-top:3.5rem;padding-bottom:1rem;}
+#csel::-webkit-scrollbar{width:2px;}#csel::-webkit-scrollbar-thumb{background:rgba(139,26,42,.2);}
+#csBg{position:absolute;inset:0;width:100%;height:100%;opacity:.07;z-index:0;}
+.cs-back{position:absolute;top:1rem;left:1.2rem;background:none;border:none;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.76rem;letter-spacing:.2em;color:var(--dim);cursor:pointer;z-index:10;transition:color .2s;}
+.cs-back:hover{color:var(--bone);}
+.cs-head{text-align:center;margin-bottom:1.4rem;position:relative;z-index:2;padding-top:.5rem;}
+.cs-ey{font-family:'Special Elite',cursive;font-size:.58rem;letter-spacing:.44em;color:var(--red);opacity:.6;text-transform:uppercase;margin-bottom:.35rem;}
+.cs-tt{font-family:'Playfair Display',serif;font-weight:400;font-size:clamp(1.4rem,4vw,2rem);color:var(--bone);letter-spacing:.06em;}
+.cs-sb{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.76rem;color:var(--dim);margin-top:.22rem;letter-spacing:.1em;}
+.trow{display:flex;width:100%;max-width:540px;position:relative;z-index:2;padding:0 1rem;margin-bottom:.8rem;}
+.tbtn{flex:1;background:none;border:none;border-bottom:1px solid rgba(139,26,42,.12);padding:.48rem;font-family:'Cormorant Garamond',serif;font-size:.73rem;letter-spacing:.24em;color:rgba(200,180,180,.32);cursor:pointer;transition:all .2s;text-transform:uppercase;}
+.tbtn.on{color:var(--bone);border-bottom-color:rgba(139,26,42,.52);}
+.slist{width:100%;max-width:540px;display:flex;flex-direction:column;gap:.5rem;padding:0 1rem;position:relative;z-index:2;max-height:42vh;overflow-y:auto;}
+.slist::-webkit-scrollbar{width:2px;}
+.si{padding:.9rem 1.1rem;border:1px solid rgba(139,26,42,.13);border-radius:3px;background:rgba(20,10,20,.58);cursor:pointer;transition:all .25s;position:relative;overflow:hidden;}
+.si::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--red);opacity:0;transition:opacity .2s;}
+.si:hover{border-color:rgba(139,26,42,.38);background:rgba(139,26,42,.05);}
+.si:hover::before,.si.on::before{opacity:1;}
+.si.on{border-color:rgba(139,26,42,.52);background:rgba(139,26,42,.09);}
+.si.lk{opacity:.28;pointer-events:none;}
+.si-ch{font-size:.56rem;letter-spacing:.36em;color:var(--red);opacity:.52;text-transform:uppercase;margin-bottom:.25rem;font-family:'Special Elite',cursive;}
+.si-t{font-family:'Playfair Display',serif;font-size:.98rem;color:var(--bone);margin-bottom:.2rem;}
+.si-d{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.74rem;color:var(--dim);line-height:1.52;}
+.si-h{font-size:.56rem;color:var(--red);opacity:.42;margin-top:.4rem;letter-spacing:.16em;}
+.si-grade{position:absolute;top:.6rem;right:.8rem;font-family:'Special Elite',cursive;font-size:.58rem;letter-spacing:.15em;opacity:.6;}
+.sbottom{width:100%;max-width:540px;padding:.75rem 1rem .95rem;position:sticky;bottom:0;z-index:15;background:linear-gradient(0deg,var(--hbg) 80%,transparent 100%);}
+.drow{display:flex;gap:.4rem;margin-bottom:.65rem;}
+.dbtn{font-family:'Cormorant Garamond',serif;font-size:.73rem;letter-spacing:.2em;padding:.28rem .85rem;border-radius:2px;border:1px solid rgba(139,26,42,.18);background:none;color:rgba(232,221,208,.3);cursor:pointer;transition:all .2s;}
+.dbtn:hover{color:var(--bone);}
+.dbtn.on{background:rgba(139,26,42,.12);color:var(--bone);border-color:rgba(139,26,42,.45);}
+.bbtn{width:100%;padding:.8rem;font-family:'Playfair Display',serif;font-style:italic;font-size:.92rem;letter-spacing:.1em;color:var(--bone);background:rgba(139,26,42,.09);border:1px solid rgba(139,26,42,.28);border-radius:2px;cursor:pointer;transition:all .3s;}
+.bbtn:hover:not(:disabled){background:rgba(139,26,42,.19);border-color:rgba(139,26,42,.55);letter-spacing:.13em;}
+.bbtn:disabled{opacity:.28;cursor:not-allowed;}
+.uphz{border:1px dashed rgba(139,26,42,.16);border-radius:3px;padding:1.3rem;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:.65rem;}
+.uphz:hover{border-color:rgba(139,26,42,.38);background:rgba(139,26,42,.03);}
+.uphz h3{font-family:'Playfair Display',serif;font-weight:400;font-size:.92rem;color:var(--bone);margin-bottom:.22rem;}
+.uphz p{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.7rem;color:var(--dim);}
+.ue{display:flex;align-items:center;gap:.7rem;padding:.5rem .8rem;border:1px solid rgba(138,171,144,.1);border-radius:2px;margin-bottom:.32rem;background:rgba(10,20,14,.5);}
+.ue-n{flex:1;font-family:'Cormorant Garamond',serif;font-size:.8rem;color:#8aab90;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.uerm{background:none;border:1px solid rgba(139,26,42,.18);color:var(--red);font-family:inherit;font-size:.6rem;padding:2px 7px;border-radius:2px;cursor:pointer;}
+#fi{display:none;}
+
+/* ══════════════ STORY INTERLUDE ══════════════ */
+#interlude{background:var(--hbg);align-items:center;justify-content:flex-start !important;overflow-y:auto;padding:2rem 1rem;}
+.il-wrap{max-width:520px;width:100%;padding:2rem 1.5rem 2.5rem;text-align:center;position:relative;z-index:2;}
+.il-chapter{font-family:'Special Elite',cursive;font-size:.58rem;letter-spacing:.45em;color:var(--red);opacity:.55;text-transform:uppercase;margin-bottom:1rem;}
+.il-title{font-family:'Playfair Display',serif;font-weight:400;font-size:clamp(1.6rem,5vw,2.4rem);color:var(--bone);margin-bottom:1.2rem;line-height:1.1;}
+.il-body{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1rem;color:var(--dim);line-height:1.9;margin-bottom:2rem;max-width:420px;}
+.il-body span{color:rgba(232,221,208,.8);}
+.il-btn{font-family:'Playfair Display',serif;font-style:italic;font-size:.88rem;color:var(--bone);background:none;border:1px solid rgba(139,26,42,.28);padding:.6rem 2rem;border-radius:2px;cursor:pointer;transition:all .3s;letter-spacing:.08em;}
+.il-btn:hover{background:rgba(139,26,42,.12);border-color:rgba(139,26,42,.52);}
+.il-skip{margin-top:.8rem;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.65rem;color:var(--dim);opacity:.4;cursor:pointer;letter-spacing:.15em;background:none;border:none;transition:opacity .2s;}
+.il-skip:hover{opacity:.7;}
+
+/* ══════════════ GAMEPLAY ══════════════ */
+#gplay{background:#05030a;align-items:stretch;justify-content:stretch;}
+#gbg{position:absolute;inset:0;z-index:0;}
+.ghud{position:absolute;top:0;left:0;right:0;padding:.85rem 1.3rem;display:flex;justify-content:space-between;align-items:flex-start;z-index:20;pointer-events:none;}
+.gn{font-family:'Playfair Display',serif;font-weight:400;font-size:.8rem;color:var(--bone);opacity:.48;letter-spacing:.1em;}
+.gcb{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.7rem;color:var(--red);opacity:.62;margin-top:2px;}
+.gsc{font-family:'Special Elite',cursive;font-size:1.4rem;color:var(--bone);opacity:.68;letter-spacing:.04em;}
+.hpt{position:absolute;left:8px;top:58px;bottom:72px;width:3px;background:rgba(61,92,66,.1);border-radius:2px;z-index:20;}
+.hpf{position:absolute;bottom:0;left:0;right:0;border-radius:2px;transition:height .5s,background .5s;background:linear-gradient(0deg,#3d5c42,#8aab90);}
+.gs{position:absolute;top:54px;left:0;right:0;bottom:66px;overflow:hidden;z-index:5;}
+.hz{position:absolute;bottom:5px;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(139,26,42,.1) 20%,rgba(139,26,42,.25) 50%,rgba(139,26,42,.1) 80%,transparent);}
+.no{position:absolute;pointer-events:none;z-index:10;width:52px;transform:translateX(-50%);}
+.np{width:52px;height:30px;border-radius:55% 45% 55% 45%/50% 50% 50% 50%;position:relative;display:flex;align-items:center;justify-content:center;}
+.np::after{content:'';position:absolute;top:4px;left:8px;width:11px;height:6px;background:rgba(255,255,255,.17);border-radius:50%;transform:rotate(-15deg);}
+.l0 .np{background:linear-gradient(135deg,#d4a8b8,#a87888);}
+.l1 .np{background:linear-gradient(135deg,#a8c4a0,#688060);}
+.l2 .np{background:linear-gradient(135deg,#c4b890,#907850);}
+.l3 .np{background:linear-gradient(135deg,#a0b4c8,#607888);}
+.no.hn .np{background:linear-gradient(135deg,#c05060,#6a1828)!important;box-shadow:0 0 10px rgba(139,26,42,.55);}
+.no.hn .np::before{content:'';position:absolute;bottom:-7px;left:50%;transform:translateX(-50%);width:2px;height:9px;background:linear-gradient(180deg,#8b1a2a,transparent);border-radius:0 0 2px 2px;}
+.ll{position:absolute;bottom:-14px;left:50%;transform:translateX(-50%);font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.56rem;color:var(--bone);opacity:.4;white-space:nowrap;}
+.hb{position:absolute;pointer-events:none;z-index:15;font-family:'Playfair Display',serif;font-style:italic;animation:hbu .58s ease-out forwards;transform:translateX(-50%);}
+@keyframes hbu{0%{opacity:1;transform:translateX(-50%) translateY(0) scale(.75)}60%{opacity:.9;transform:translateX(-50%) translateY(-28px) scale(1.1)}100%{opacity:0;transform:translateX(-50%) translateY(-55px) scale(1.2)}}
+.hbp{color:#e8c0c8;font-size:1.2rem;}.hbg{color:#a0c890;font-size:1rem;}.hbm{color:#8b1a2a;font-size:.9rem;}
+.lw{position:absolute;bottom:11px;left:50%;transform:translateX(-50%);font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.92rem;color:var(--bone);opacity:0;pointer-events:none;white-space:nowrap;letter-spacing:.06em;transition:opacity .25s;text-shadow:0 0 16px rgba(139,26,42,.4);}
+.lw.sv{opacity:.4;}.lw.lt{opacity:.9;color:#e8b4c0;}
+.gpt{position:absolute;bottom:0;left:0;right:0;height:2px;background:rgba(61,92,66,.08);z-index:20;}
+.gpf{height:100%;background:linear-gradient(90deg,#3d5c42,#8aab90);width:0%;transition:width .2s linear;}
+.krow{position:absolute;bottom:0;left:0;right:0;height:66px;background:rgba(5,3,10,.96);border-top:1px solid rgba(139,26,42,.05);display:flex;justify-content:center;align-items:center;gap:7px;z-index:20;}
+.kp{width:74px;height:60px;border-radius:4px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-family:'Special Elite',cursive;font-size:.62rem;letter-spacing:.15em;cursor:pointer;border:1px solid rgba(232,221,208,.08);transition:all .08s;touch-action:manipulation;-webkit-tap-highlight-color:transparent;}
+.klt{opacity:.65;text-transform:uppercase;}
+.k0{background:rgba(212,168,184,.06);color:#d4a8b8;}.k1{background:rgba(168,196,160,.06);color:#a8c4a0;}
+.k2{background:rgba(196,184,144,.06);color:#c4b890;}.k3{background:rgba(160,180,200,.06);color:#a0b4c8;}
+.kp.pressed{transform:scale(.87);box-shadow:0 0 14px rgba(232,221,208,.1);filter:brightness(1.5);}
+.pss{position:absolute;bottom:66px;display:flex;flex-direction:column-reverse;gap:2px;pointer-events:none;z-index:8;opacity:.2;}
+.pss.l{left:4px;}.pss.r{right:4px;}
+.pb{width:3px;border-radius:2px;background:linear-gradient(0deg,#8b1a2a,#e8b4c0);min-height:2px;transition:height .04s;}
+.di{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Special Elite',cursive;font-size:.56rem;letter-spacing:.36em;color:rgba(139,26,42,.5);pointer-events:none;z-index:400;display:none;text-transform:uppercase;}
+.di.sh{display:block;animation:dia .55s ease-out;}@keyframes dia{0%{opacity:1}100%{opacity:0}}
+
+/* ══════════════ DEATH ══════════════ */
+#death{background:#000;}
+.dw{text-align:center;padding:2rem;position:relative;z-index:2;max-width:480px;}
+.dent{font-size:3.5rem;display:block;margin-bottom:.8rem;filter:grayscale(1) brightness(.3);animation:def 3.5s ease-in-out infinite;}
+@keyframes def{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.dt{font-family:'Special Elite',cursive;font-size:clamp(1.1rem,3vw,1.6rem);color:var(--red);letter-spacing:.14em;text-transform:uppercase;margin-bottom:.45rem;}
+.ds{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.9rem;color:rgba(232,221,208,.4);margin-bottom:1.3rem;line-height:1.8;}
+.dcl{background:rgba(139,26,42,.06);border:1px solid rgba(139,26,42,.16);border-radius:2px;padding:.8rem 1.2rem;font-family:'Special Elite',cursive;font-size:.68rem;color:rgba(139,26,42,.6);letter-spacing:.13em;line-height:1.8;margin:0 auto 1.3rem;max-width:380px;}
+.dbb{font-family:'Playfair Display',serif;font-style:italic;font-size:.84rem;color:rgba(232,221,208,.42);background:none;border:1px solid rgba(232,221,208,.1);padding:.5rem 1.6rem;border-radius:2px;cursor:pointer;transition:all .3s;letter-spacing:.1em;margin:.3rem;}
+.dbb:hover{color:var(--bone);border-color:rgba(232,221,208,.36);}
+
+/* ══════════════ RESULTS ══════════════ */
+#res{background:var(--hbg);}
+#rcan{position:absolute;inset:0;width:100%;height:100%;opacity:.06;z-index:0;}
+.rw{text-align:center;padding:2rem;position:relative;z-index:2;max-height:100vh;overflow-y:auto;}
+.rw::-webkit-scrollbar{width:2px;}
+.rg{font-family:'Playfair Display',serif;font-weight:700;font-size:clamp(4rem,12vw,6.5rem);line-height:1;animation:rgi .5s cubic-bezier(.34,1.56,.64,1);}
+@keyframes rgi{from{opacity:0;transform:scale(.35) rotate(-10deg)}to{opacity:1;transform:scale(1) rotate(0)}}
+.gs{background:linear-gradient(180deg,#e8b4c0,#8b1a2a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.ga{background:linear-gradient(180deg,#c0d890,#5a8a42);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.gb2{background:linear-gradient(180deg,#e8ddd0,#a09080);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.gc{background:linear-gradient(180deg,#d4c890,#907840);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.gd{background:linear-gradient(180deg,#a89090,#604040);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.gf{background:linear-gradient(180deg,#c05060,#3a1020);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.rv{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.8rem;color:var(--dim);margin-bottom:1rem;letter-spacing:.13em;}
+.rst{display:grid;grid-template-columns:repeat(3,1fr);gap:.55rem;max-width:320px;margin:0 auto .95rem;}
+.rc{background:rgba(20,10,20,.7);border:1px solid rgba(139,26,42,.09);border-radius:2px;padding:.6rem .35rem;}
+.rn{font-family:'Special Elite',cursive;font-size:1.6rem;color:var(--bone);}
+.rl{font-size:.5rem;color:var(--dim);text-transform:uppercase;letter-spacing:.27em;}
+/* Story reveal in results */
+.story-reveal{background:rgba(139,26,42,.05);border:1px solid rgba(139,26,42,.18);border-radius:2px;padding:.9rem 1.2rem;max-width:420px;margin:0 auto .85rem;text-align:left;}
+.sr-label{font-family:'Special Elite',cursive;font-size:.55rem;letter-spacing:.38em;color:var(--red);opacity:.55;text-transform:uppercase;margin-bottom:.4rem;}
+.sr-txt{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.86rem;color:var(--bone);line-height:1.75;opacity:.82;}
+.sr-txt span{color:var(--red);}
+.sr-hidden{font-family:'Special Elite',cursive;font-size:.65rem;letter-spacing:.2em;color:rgba(139,26,42,.58);margin-top:.5rem;display:block;}
+.ra{display:flex;gap:.6rem;justify-content:center;margin-top:.5rem;flex-wrap:wrap;}
+.rbtn{font-family:'Playfair Display',serif;font-style:italic;font-size:.83rem;color:var(--bone);background:rgba(139,26,42,.07);border:1px solid rgba(139,26,42,.2);padding:.52rem 1.2rem;border-radius:2px;cursor:pointer;letter-spacing:.08em;transition:all .2s;}
+.rbtn:hover{background:rgba(139,26,42,.16);border-color:rgba(139,26,42,.45);}
+.new-badge{display:inline-block;background:rgba(139,26,42,.2);color:var(--rose);font-family:'Special Elite',cursive;font-size:.5rem;letter-spacing:.2em;padding:2px 6px;border-radius:2px;margin-left:.4rem;vertical-align:middle;animation:nbPulse 2s ease-in-out infinite;}
+@keyframes nbPulse{0%,100%{opacity:.7}50%{opacity:1}}
+
+/* ══════════════ ENDING SCREEN ══════════════ */
+#ending{background:#000;}
+.end-wrap{max-width:520px;padding:3rem 2rem;text-align:center;position:relative;z-index:2;}
+.end-num{font-family:'Special Elite',cursive;font-size:.6rem;letter-spacing:.45em;color:var(--gold);opacity:.55;text-transform:uppercase;margin-bottom:.8rem;}
+.end-title{font-family:'Playfair Display',serif;font-weight:400;font-size:clamp(1.8rem,5vw,2.8rem);color:var(--bone);margin-bottom:1.5rem;line-height:1.05;}
+.end-body{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1rem;color:rgba(232,221,208,.65);line-height:1.95;margin-bottom:2rem;max-width:440px;}
+.end-body strong{color:var(--bone);font-style:normal;font-weight:400;}
+.end-choices{display:flex;flex-direction:column;gap:.6rem;max-width:360px;margin:0 auto 1.5rem;}
+.end-choice{padding:.75rem 1.2rem;font-family:'Playfair Display',serif;font-style:italic;font-size:.9rem;color:var(--bone);background:rgba(139,26,42,.07);border:1px solid rgba(139,26,42,.22);border-radius:2px;cursor:pointer;transition:all .3s;text-align:left;}
+.end-choice:hover{background:rgba(139,26,42,.16);border-color:rgba(139,26,42,.48);transform:translateX(4px);}
+.end-result{background:rgba(200,168,96,.06);border:1px solid rgba(200,168,96,.2);border-radius:2px;padding:1rem 1.5rem;margin-bottom:1.5rem;display:none;}
+.end-result.show{display:block;}
+.end-result-txt{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.9rem;color:rgba(232,221,208,.8);line-height:1.8;}
+.end-btns{display:flex;gap:.7rem;justify-content:center;flex-wrap:wrap;}
+.end-btn{font-family:'Playfair Display',serif;font-style:italic;font-size:.86rem;color:rgba(232,221,208,.5);background:none;border:1px solid rgba(232,221,208,.12);padding:.5rem 1.5rem;border-radius:2px;cursor:pointer;transition:all .3s;letter-spacing:.08em;}
+.end-btn:hover{color:var(--bone);border-color:rgba(232,221,208,.35);}
+</style>
+</head>
+<body>
+<div id="cur"><div id="cd"></div><div id="cr"></div></div>
+<div class="grain"></div><div class="vig"></div><div class="stear"></div>
+<div class="di" id="di">memory corrupted</div>
+<div id="gbt"></div>
+<div id="tov"><div class="gll" style="animation-delay:0s"></div><div class="gll" style="animation-delay:.04s"></div><div class="gll" style="animation-delay:.08s"></div></div>
+<div id="micWhisper"></div>
+<div id="corrEvent"></div>
+<!-- INTERROGATION OVERLAY -->
+<div id="introg">
+  <div class="ig-entity" id="igEnt">▲</div>
+  <div class="ig-q">the archive asks</div>
+  <div class="ig-title" id="igTitle">WHO KILLED MARA?</div>
+  <div class="ig-sub" id="igSub">Choose carefully. The archive remembers every answer.</div>
+  <div class="ig-choices" id="igChoices"></div>
+  <div class="ig-result" id="igResult"><div class="ig-result-txt" id="igResultTxt"></div></div>
+  <button class="ig-close" id="igClose" onclick="closeIntrog()" style="display:none">continue into the archive</button>
+</div>
+
+<!-- ═══════════════ HOME ═══════════════ -->
+<div id="home" class="screen active">
+  <canvas id="homeC" style="position:absolute;inset:0;width:100%;height:100%;"></canvas>
+  <div class="hi">
+    <div class="h-ey">— a dream archive —</div>
+    <div class="h-tt">The <em>Willow</em></div>
+    <div class="h-sr">Willower &nbsp;·&nbsp; Willowest</div>
+    <div class="h-tg">The archive stores the memories of those who sang.<br>Some of them never woke up.<br>You are here to find out why.</div>
+    <div class="h-nav">
+      <button class="h-btn" onclick="enterHorror('willow')"><span>Begin — Chapter I</span><span class="hb-r">The Willow</span></button>
+      <button class="h-btn" onclick="goHub()"><span>The Archive <span id="newBadge" class="new-badge" style="display:none">new</span></span><span class="hb-r">story · clues · endings</span></button>
+      <button class="h-btn" onclick="enterHorror('upload')" id="upHomeBtn"><span>Upload a Memory</span><span class="hb-r">M4A · MP3 · WAV</span></button>
+    </div>
+  </div>
+  <div class="h-hint">← ↓ ↑ → &nbsp;·&nbsp; A S W D &nbsp;·&nbsp; or tap the keys</div>
+</div>
+
+<!-- ═══════════════ ARCHIVE HUB ═══════════════ -->
+<div id="hub" class="screen">
+  <canvas id="hubC" style="position:absolute;inset:0;width:100%;height:100%;opacity:.06;z-index:0;pointer-events:none;"></canvas>
+  <div class="hub-inner">
+    <div class="hub-top">
+      <button class="hub-back" onclick="goHome()">← leave the archive</button>
+      <button class="hub-back" onclick="enterHorror('willow')" style="color:var(--red);opacity:.6;">▶ continue</button>
+    </div>
+    <div class="hub-title">The Archive</div>
+    <div class="hub-sub">everything the forest has let you keep</div>
+
+    <!-- Progress -->
+    <div class="prog-wrap">
+      <div class="prog-label"><span>investigation progress</span><span id="progPct">0%</span></div>
+      <div class="prog-track"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+    </div>
+
+    <!-- Story Log -->
+    <div class="story-section">
+      <div class="ss-label">Story Log — what you know</div>
+      <div id="storyLog"></div>
+    </div>
+
+    <!-- Fragments / Clues -->
+    <div class="story-section">
+      <div class="ss-label">Recovered Fragments</div>
+      <div class="frag-grid" id="fragGrid"></div>
+    </div>
+
+    <!-- Endings -->
+    <div class="story-section">
+      <div class="ss-label">Endings — three truths, one archive</div>
+      <div id="endingsShelf"></div>
+    </div>
+
+    <!-- Chapter nav -->
+    <div class="story-section">
+      <div class="ss-label">Continue Investigation</div>
+      <div style="display:flex;flex-direction:column;gap:.5rem;">
+        <button class="rbtn" style="text-align:left;display:flex;justify-content:space-between;" onclick="enterHorror('willow')"><span>Chapter I — The Willow</span><span style="opacity:.4;font-size:.72rem;">origin</span></button>
+        <button class="rbtn" style="text-align:left;display:flex;justify-content:space-between;" onclick="enterHorror('willower')"><span>Chapter II — Willower</span><span style="opacity:.4;font-size:.72rem;">bloom</span></button>
+        <button class="rbtn" style="text-align:left;display:flex;justify-content:space-between;" onclick="enterHorror('willowest')"><span>Chapter III — Willowest</span><span style="opacity:.4;font-size:.72rem;">descent</span></button>
+        <div style="margin-top:.8rem;padding-top:.8rem;border-top:1px solid rgba(139,26,42,.08);">
+          <div style="font-family:'Special Elite',cursive;font-size:.55rem;letter-spacing:.35em;color:var(--dim);text-transform:uppercase;margin-bottom:.5rem;opacity:.5;">Re-read story intros</div>
+          <div style="display:flex;gap:.4rem;flex-wrap:wrap;">
+            <button class="dbtn" onclick="rereadInterlude('willow')">I — The Willow</button>
+            <button class="dbtn" onclick="rereadInterlude('willower')">II — Willower</button>
+            <button class="dbtn" onclick="rereadInterlude('willowest')">III — Willowest</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Case File -->
+    <div class="story-section">
+      <div class="ss-label">Case File</div>
+      <div class="case-file" id="caseFile">
+        <div class="cf-header">active investigation — archive case #001</div>
+        <div class="cf-row"><div class="cf-key">Victim</div><div class="cf-val" id="cfVictim">Mara — singer, first upload, session never closed</div></div>
+        <div class="cf-row"><div class="cf-key">Suspects</div><div class="cf-val" id="cfSuspects">
+          <span class="cf-suspect cf-s-perf">The Performer</span>
+          <span class="cf-suspect cf-s-vael">Dr. Vael</span>
+          <span class="cf-suspect cf-s-arch">The Archivist</span>
+          <span class="cf-suspect cf-s-you">You</span>
+        </div></div>
+        <div class="cf-row"><div class="cf-key">Method</div><div class="cf-val redacted" id="cfMethod">████████ ████ ████████</div></div>
+        <div class="cf-row"><div class="cf-key">Location</div><div class="cf-val">The Archive — not a physical place</div></div>
+        <div class="cf-row"><div class="cf-key">Motive</div><div class="cf-val redacted" id="cfMotive">████████ ████████</div></div>
+        <div class="cf-row"><div class="cf-key">Status</div><div class="cf-val" id="cfStatus" style="color:var(--red);opacity:.7">open — <span id="cfResolved">0/9</span> memories reconstructed</div></div>
+      </div>
+      <button class="rbtn" style="width:100%;margin-top:.4rem;" onclick="openIntrog()">▶ Interrogate the Archive</button>
+    </div>
+
+    <!-- Secret File -->
+    <div class="story-section">
+      <div class="ss-label">Restricted Access</div>
+      <div class="secret-file" id="secretFile" onclick="tryOpenSecret()">
+        <div>████████.wav</div>
+        <div style="font-size:.55rem;margin-top:.3rem;opacity:.5">access requires: 3× B grade · 1× death event</div>
+        <div class="sf-content" id="sfContent">
+          <div style="margin-bottom:.5rem;color:var(--red);opacity:.7">decrypted — archive internal log — dr. vael, final session</div>
+          "I understand now what the archive collects. It is not voices. It is the <em>gap between notes</em> — the silence the singer leaves. That is what it stores. That is what it becomes.<br><br>
+          I found the blueprint today. It has a name on it I do not recognise. But the handwriting is mine.<br><br>
+          I wrote this. I left this here. I do not remember doing it.<br><br>
+          <em>I think I have been here before.</em>"
+        </div>
+      </div>
+    </div>
+
+    <!-- Audio Setup Guide -->
+    <div class="story-section">
+      <div class="ss-label">How to Get Songs Playing</div>
+      <div class="audio-path-hint" style="line-height:2.2;">
+        <div style="margin-bottom:.8rem;color:var(--bone);font-family:'Playfair Display',serif;font-weight:400;font-size:.9rem;">The game cannot stream from YouTube directly — browsers block it for copyright reasons. Here's how to get audio working:</div>
+
+        <div style="margin-bottom:.6rem;"><strong style="color:var(--bone);">Step 1 — Download the songs as MP3</strong><br>
+        Use <code>yt-dlp</code> (free, open source) or an online tool like <code>cobalt.tools</code> to download audio from YouTube as MP3. Rename each file to lowercase with underscores — no spaces.</div>
+
+        <div style="margin-bottom:.6rem;"><strong style="color:var(--bone);">Step 2 — Name them exactly like this</strong><br>
+        <code>love_you_like_an_alcoholic.mp3</code><br>
+        <code>masochistic_tango.mp3</code><br>
+        <code>faouzia_tears_of_gold.mp3</code><br>
+        <code>faouzia_born_without_a_heart.mp3</code><br>
+        <code>faouzia_you_dont_even_know_me.mp3</code><br>
+        <code>the_hollow_season.mp3</code><br>
+        <code>faouzia_minefields.mp3</code><br>
+        <code>faouzia_anybody_out_there.mp3</code><br>
+        <code>you_are_the_missing_singer.mp3</code></div>
+
+        <div style="margin-bottom:.6rem;"><strong style="color:var(--bone);">Step 3 — Place them in your repo</strong><br>
+        <code>/your-repo/</code><br>
+        <code>&nbsp;&nbsp;index.html</code> ← this file<br>
+        <code>&nbsp;&nbsp;/audio/</code><br>
+        <code>&nbsp;&nbsp;&nbsp;&nbsp;love_you_like_an_alcoholic.mp3</code><br>
+        <code>&nbsp;&nbsp;&nbsp;&nbsp;faouzia_tears_of_gold.mp3</code><br>
+        <code>&nbsp;&nbsp;&nbsp;&nbsp;... etc</code></div>
+
+        <div style="margin-bottom:.4rem;"><strong style="color:var(--bone);">Step 4 — Open the file locally first to test</strong><br>
+        Open <code>index.html</code> directly in Chrome/Firefox (file://). If audio plays locally, it will play on GitHub Pages too. Check the browser console for 404 errors if it doesn't load.</div>
+
+        <div style="color:rgba(200,168,96,.6);font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.78rem;">For uploaded songs: drag any MP3/WAV/OGG into the Upload section. M4A may fail in some browsers — convert to MP3 first using <code>ffmpeg</code> or an online converter.</div>
+      </div>
+    </div>
+  </div><!-- /hub-inner -->
+</div><!-- /hub -->
+
+<!-- ═══════════════ CHAPTER SELECT ═══════════════ -->
+<div id="csel" class="screen">
+  <canvas id="csBg" style="position:absolute;inset:0;width:100%;height:100%;opacity:.07;z-index:0;"></canvas>
+  <button class="cs-back" onclick="goHub()">← archive</button>
+  <div class="cs-head">
+    <div class="cs-ey">memory archive</div>
+    <div class="cs-tt" id="csT">The Willow</div>
+    <div class="cs-sb" id="csSb">select a memory to reconstruct</div>
+  </div>
+  <div class="trow" id="trow"></div>
+  <div class="slist" id="slist"></div>
+  <div id="upSec" style="width:100%;max-width:540px;padding:0 1rem;position:relative;z-index:2;display:none;">
+    <div class="uphz" onclick="document.getElementById('fi').click()">
+      <h3>Upload Memory</h3>
+      <p>Drop your audio file — the archive will process what you bring</p>
+      <div class="upload-format-row" style="justify-content:center;margin-top:.6rem;">
+        <span class="uf-pill uf-good">MP3 ✓</span>
+        <span class="uf-pill uf-good">WAV ✓</span>
+        <span class="uf-pill uf-good">OGG ✓</span>
+        <span class="uf-pill uf-warn">M4A ⚠</span>
+        <span class="uf-pill uf-bad">FLAC ✗</span>
+      </div>
+    </div>
+    <div class="upload-warn">
+      <strong>If your song won't play:</strong> rename to lowercase with no spaces — e.g. <code style="font-family:'Special Elite',cursive;font-size:.72rem;">tears_of_gold.mp3</code><br>
+      M4A files sometimes fail in browsers — convert to MP3 first.<br>
+      On GitHub Pages, place files in <code style="font-family:'Special Elite',cursive;font-size:.72rem;">/audio/</code> and set <code style="font-family:'Special Elite',cursive;font-size:.72rem;">path:'./audio/filename.mp3'</code> in the song data.
+    </div>
+    <input type="file" id="fi" accept="audio/*,video/*" multiple onchange="handleFiles(this.files)">
+    <div id="upEntries"></div>
+    <div class="slist" id="upSongs" style="max-height:none;overflow:visible;margin-top:.5rem;"></div>
+  </div>
+  <div class="sbottom">
+    <div class="drow">
+      <button class="dbtn on" data-d="gentle" onclick="setDiff(this)">Gentle</button>
+      <button class="dbtn" data-d="dread" onclick="setDiff(this)">Dread</button>
+      <button class="dbtn" data-d="abyss" onclick="setDiff(this)">Abyss</button>
+    </div>
+    <button class="bbtn" id="begBtn" disabled onclick="startGame()">Begin</button>
+  </div>
+</div>
+
+<!-- ═══════════════ STORY INTERLUDE ═══════════════ -->
+<div id="interlude" class="screen">
+  <div class="il-wrap">
+    <div class="il-chapter" id="ilCh">Chapter I</div>
+    <div class="il-title" id="ilTt">—</div>
+    <div class="il-body" id="ilBd"></div>
+    <button class="il-btn" id="ilBtn" onclick="continueFromInterlude()">Continue</button>
+    <button class="il-skip" onclick="skipInterlude()">skip</button>
+  </div>
+</div>
+
+<!-- ═══════════════ GAMEPLAY ═══════════════ -->
+<div id="gplay" class="screen">
+  <canvas id="gbg"></canvas>
+  <div class="ghud">
+    <div><div class="gn" id="gN">—</div><div class="gcb" id="gCb"></div></div>
+    <div class="gsc" id="gSc">0</div>
+  </div>
+  <div class="hpt"><div class="hpf" id="hpF" style="height:100%"></div></div>
+  <div class="integrity-bar"><div class="integrity-fill" id="intgFill" style="height:100%"></div></div>
+  <div class="hb-ind"><span id="hbDot">♥</span> <span id="hbBpm" style="opacity:.4">—</span></div>
+  <div class="gs" id="gsc">
+    <!-- Animated lane lines (light trails fall down each lane) -->
+    <div class="lane-line ll-0" style="position:absolute;top:0;bottom:0;left:17%;"></div>
+    <div class="lane-line ll-1" style="position:absolute;top:0;bottom:0;left:36%;"></div>
+    <div class="lane-line ll-2" style="position:absolute;top:0;bottom:0;left:55%;"></div>
+    <div class="lane-line ll-3" style="position:absolute;top:0;bottom:0;left:74%;"></div>
+    <!-- Note layer -->
+    <div id="nL" style="position:absolute;inset:0;z-index:10;pointer-events:none;"></div>
+    <!-- Visual cue layer (flower blooms on beat) -->
+    <div id="vcueLayer" style="position:absolute;inset:0;z-index:6;pointer-events:none;"></div>
+    <!-- Particle layer for hit bursts -->
+    <div id="partLayer" style="position:absolute;inset:0;z-index:14;pointer-events:none;"></div>
+    <!-- Scene character (nods on each cue) -->
+    <div class="scene-char" id="sceneChar">🌸</div>
+    <!-- Memory layer badge -->
+    <div class="layer-badge" id="layerBadge"></div>
+    <!-- Replay counter -->
+    <div class="replay-badge" id="replayBadge"></div>
+    <!-- Hit zone glow line -->
+    <div class="hz"></div>
+    <!-- Lyric whisper text -->
+    <div class="lw" id="lwEl"></div>
+    <!-- Audio analyser pulse bars -->
+    <div class="pss l" id="psL"><div class="pb" style="height:3px"></div><div class="pb" style="height:7px"></div><div class="pb" style="height:5px"></div><div class="pb" style="height:9px"></div><div class="pb" style="height:4px"></div></div>
+    <div class="pss r" id="psR"><div class="pb" style="height:3px"></div><div class="pb" style="height:7px"></div><div class="pb" style="height:5px"></div><div class="pb" style="height:9px"></div><div class="pb" style="height:4px"></div></div>
+  </div>
+  <div class="gpt"><div class="gpf" id="gpF"></div></div>
+  <div class="krow">
+    <div class="kp k0" id="kp0" ontouchstart="kd(0,true)" ontouchend="kd(0,false)" onmousedown="kd(0,true)" onmouseup="kd(0,false)"><span class="klt">←  A</span></div>
+    <div class="kp k1" id="kp1" ontouchstart="kd(1,true)" ontouchend="kd(1,false)" onmousedown="kd(1,true)" onmouseup="kd(1,false)"><span class="klt">↓  S</span></div>
+    <div class="kp k2" id="kp2" ontouchstart="kd(2,true)" ontouchend="kd(2,false)" onmousedown="kd(2,true)" onmouseup="kd(2,false)"><span class="klt">↑  W</span></div>
+    <div class="kp k3" id="kp3" ontouchstart="kd(3,true)" ontouchend="kd(3,false)" onmousedown="kd(3,true)" onmouseup="kd(3,false)"><span class="klt">→  D</span></div>
+  </div>
+</div>
+
+<div id="idleWhisper"></div>
+<div id="dirWhisperL"></div>
+<div id="dirWhisperR"></div>
+
+<!-- INTRO / MANUAL SCREEN -->
+<div id="introScreen" class="screen">
+  <div class="intro-wrap">
+    <div class="intro-eyebrow">before you begin</div>
+    <div class="intro-title">The Willow is not a game about perfection.</div>
+    <div class="intro-body">
+      <p>It listens. It remembers. It adapts.</p>
+      <p>Each memory you enter is played through rhythm — follow what you see, not what you expect. <em>There are no instructions on screen.</em> The flowers bloom when it is time. Trust that.</p>
+      <p>You may sing if you wish. You may stay silent. <strong>Both have consequences.</strong></p>
+      <p>Your performance shapes what the archive shows you. Clean execution may feel correct, but it will not always reveal the truth. <em>Imperfection has a way of breaking through.</em></p>
+      <p>Some details will change the second time. <strong>Others will lie to you the third.</strong></p>
+      <p>If you hesitate, it will notice. If you fail, it may keep you.</p>
+      <p><em>Nothing here is entirely real. But something here is remembering you.</em></p>
+      <p style="font-family:'Special Elite',cursive;font-size:.6rem;letter-spacing:.3em;color:var(--red);opacity:.45;margin-top:1.5rem;">USE ← ↓ ↑ → ARROW KEYS &nbsp;·&nbsp; OR A S W D &nbsp;·&nbsp; OR TAP THE BUTTONS</p>
+    </div>
+    <button class="intro-proceed" onclick="proceedFromIntro()">I understand</button>
+    <button class="intro-skip" onclick="proceedFromIntro()">skip</button>
+  </div>
+</div>
+
+<!-- CONTRADICTION DETECTION PANEL -->
+<div id="contradictPanel">
+  <div class="cp-eyebrow">contradiction detected</div>
+  <div class="cp-title" id="cpTitle">Something does not align.</div>
+  <div class="cp-sub" id="cpSub">Mark the statement that cannot be true alongside the others.</div>
+  <div class="cp-statements" id="cpStatements"></div>
+  <div class="cp-result" id="cpResult"></div>
+  <div class="cp-btns">
+    <button class="cp-btn" onclick="submitContradiction()">Submit deduction</button>
+    <button class="cp-btn" style="opacity:.5;font-size:.78rem;" onclick="dismissContradiction()">I can't tell</button>
+  </div>
+</div>
+
+<!-- CONSUMED PLAYBACK -->
+<div id="consumedOverlay">
+  <div class="co-entity">◈</div>
+  <div class="co-title">the archive has kept something</div>
+  <div class="co-msg" id="coMsg">a previous session echoes here</div>
+  <div class="co-sub" id="coSub">Someone who played this song before you did not finish it.<br>The archive kept a fragment of what they left behind.</div>
+  <button class="co-close" onclick="closeConsumed()">continue into the memory</button>
+</div>
+
+<!-- DON'T PLAY EASTER EGG -->
+<div id="dontPlay">
+  <div class="dp-text">good.<br><em>don't play.</em><br><br><span>the archive has been waiting for someone<br>to simply sit with it.</span><br><br>you have unlocked something.<br>it does not have a name.</div>
+  <button class="dp-close" onclick="closeDontPlay()">I changed my mind</button>
+</div>
+
+<!-- FAKE CRASH -->
+<div id="fakeCrash">
+  <div class="fc-title" id="fcTitle">the willow has stopped responding</div>
+  <div class="fc-sub" id="fcSub">an unexpected memory was encountered<br>the archive is attempting to recover<br><br>████████████████████<br><br>do not close this window</div>
+</div>
+
+<!-- ═══════════════ DEATH ═══════════════ -->
+<div id="death" class="screen">
+  <div class="dw">
+    <span class="dent" id="dEnt">☽</span>
+    <div class="dt" id="dT">YOU MISSED SOMETHING.</div>
+    <div class="ds" id="dS">The archive does not forgive incomplete memories.</div>
+    <div class="dcl" id="dC"></div>
+    <button class="dbb" onclick="fromDeath(false)">try again</button>
+    <button class="dbb" onclick="fromDeath(true)">return to the archive</button>
+  </div>
+</div>
+
+<!-- ═══════════════ RESULTS ═══════════════ -->
+<div id="res" class="screen">
+  <canvas id="rcan"></canvas>
+  <div class="rw">
+    <div class="rg" id="rGr">S</div>
+    <div class="rv" id="rVd">memory reconstructed</div>
+    <div class="rst">
+      <div class="rc"><div class="rn" id="rP">0</div><div class="rl">Perfect</div></div>
+      <div class="rc"><div class="rn" id="rG">0</div><div class="rl">Good</div></div>
+      <div class="rc"><div class="rn" id="rM">0</div><div class="rl">Miss</div></div>
+      <div class="rc"><div class="rn" id="rCb">0</div><div class="rl">Chain</div></div>
+      <div class="rc"><div class="rn" id="rSc2">0</div><div class="rl">Score</div></div>
+      <div class="rc"><div class="rn" id="rAc">0%</div><div class="rl">Recall</div></div>
+    </div>
+    <div class="tp-banner" id="tpBanner" style="display:none">
+      <div class="tp-type" id="tpType">—</div>
+      <div class="tp-text" id="tpText">—</div>
+    </div>
+    <div class="story-reveal" id="stReveal" style="display:none">
+      <div class="sr-label" id="srLabel">fragment recovered</div>
+      <div class="sr-txt" id="srTxt"></div>
+    </div>
+    <div class="ra">
+      <button class="rbtn" onclick="retryGame()">Again</button>
+      <button class="rbtn" onclick="goHub()">Archive</button>
+      <button class="rbtn" onclick="nextSong()">Next Memory</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ ENDING SCREEN ═══════════════ -->
+<div id="ending" class="screen">
+  <canvas id="endC" style="position:absolute;inset:0;width:100%;height:100%;opacity:.08;z-index:0;pointer-events:none;"></canvas>
+  <div class="end-wrap" style="position:relative;z-index:2;">
+    <div class="end-num" id="endNum">Ending I</div>
+    <div class="end-title" id="endTitle">—</div>
+    <div class="end-body" id="endBody"></div>
+    <div class="end-choices" id="endChoices"></div>
+    <div class="end-result" id="endResult"><div class="end-result-txt" id="endResultTxt"></div></div>
+    <div class="end-btns">
+      <button class="end-btn" onclick="goHub()">return to archive</button>
+      <button class="end-btn" onclick="goHome()">leave</button>
+    </div>
+  </div>
+</div>
+
+<audio id="aEl" preload="none"></audio>
+
+<script>
+/* ══════════════════════════════════════════════
+   SONG DATA
+══════════════════════════════════════════════ */
+const SONGS={
+ willow:[
+  {id:'w1',title:'Love You Like an Alcoholic',ch:'The Willow · I',locked:false,
+   path:'./audio/love_you_like_an_alcoholic.mp3',
+   desc:'She sang this the night before she disappeared. The recording ends mid-note.',
+   horror:'the echo never stopped playing.',
+   ly:['love you','like a','drinking','problem','can\'t stop','won\'t stop','even when','it hurts','even when','the bottle','is empty','I reach','for you','again','again'],
+   clue:'The recording ends at bar 47. The file shows 48 bars. Something added a bar after she left.',
+   hidden:'SHE DID NOT LEAVE WILLINGLY',suspect:'The Archivist',method:'The final note was not hers.',
+   storyUnlock:{grade:'B',text:'Her name was <span>Mara</span>. She uploaded three songs before she vanished. The archive shows she was still logged in when the session ended — but her upload history stops here.'},
+   storyGrade:{S:'The final bar of her recording contains a second voice. It is whispering coordinates.',A:'Her session log shows she tried to delete this file four times before uploading it.',B:'She marked this memory as "for someone who knows what I mean."',C:'The file was renamed after upload. You cannot see the original name.',D:'Something in this recording breathes.'}},
+  {id:'w2',title:'Masochistic Tango',ch:'The Willow · II',locked:false,
+   path:'./audio/masochistic_tango.mp3',
+   desc:'Two voices in this recording. Only one person was in the room.',
+   horror:'the second voice answered before the questions were asked.',
+   ly:['one step','forward','two steps','into the','wound we','waltz through','broken glass','call it','dancing you','lead I bleed','we call','this love','this waltz','this wound','this'],
+   clue:'The backup vocal was recorded three weeks after the primary singer was declared missing.',
+   hidden:'WHO SANG THE HARMONY',suspect:'The Performer',method:'It learned her voice from the archive.',
+   storyUnlock:{grade:'B',text:'Spectral analysis confirms the second voice does not belong to any archived singer. <span>The Performer</span> has been in the archive since at least the second submission.'},
+   storyGrade:{S:'The second voice says her name at 2:47. It says it lovingly.',A:'The harmony tracks her original vocal with 0.0003 second delay. It was listening in real time.',B:'The Performer has taken three voices so far. It prefers voices that sing about pain.',C:'The second voice is slightly off-key. As if it is still learning.',D:'You hear something in the silence between bars.'}},
+  {id:'w3',title:'Faouzia — Tears of Gold',ch:'The Willow · III',locked:false,
+   path:'./audio/faouzia_tears_of_gold.mp3',
+   desc:'Labelled "recovered." No upload date. The file predates the archive.',
+   horror:'it existed before the archive was built.',
+   ly:['turning','my sorrow','into gold','these tears','aren\'t weakness','I was told','from ashes','I will','rise again','with golden','tears in','my hollow','burning','restless','eyes'],
+   clue:'File metadata reads: created 1987. The archive was built in 2019. Time is inconsistent here.',
+   hidden:'THE ARCHIVE IS OLDER THAN ITS MAKERS',suspect:'The Archive itself',method:'It preexisted its own creation.',
+   storyUnlock:{grade:'B',text:'The archive was not built in 2019. That is the date it <span>became visible</span>. Dr. Vael\'s notes describe encountering "an existing structure" when he began construction. He did not build it. He found it.'},
+   storyGrade:{S:'The 1987 timestamp corresponds to a specific date: the night Mara\'s mother disappeared.',A:'Dr. Vael wrote in his final log: "I think it was always here. I think we were always going to find it."',B:'The earliest file in the archive predates digital audio technology.',C:'Something in this recording breathes at a rhythm that does not match human lungs.',D:'The archive has no record of who created it.'}}
+ ],
+ willower:[
+  {id:'wr1',title:'Faouzia — Born Without a Heart',ch:'Willower · I',locked:false,
+   path:'./audio/faouzia_born_without_a_heart.mp3',
+   desc:'She wrote: "so it remembers me." It does. She is still here.',
+   horror:'she never left. she is the archive now.',
+   ly:['born without','a heart','to break','born without','the parts','that ache','I don\'t','feel cold','I don\'t','feel the fall','I was','always already','nothing','at all','nothing'],
+   clue:'Three users uploaded this same song on the same night from different locations.',
+   hidden:'THEY WERE ALL CALLED HERE',suspect:'The Performer',method:'It selected them through the song.',
+   storyUnlock:{grade:'B',text:'Mara, Lenne, and someone with no account name all uploaded this within six minutes of each other. They had never communicated. <span>The archive sent them all the same recommendation at 11:54 PM.</span>'},
+   storyGrade:{S:'Lenne\'s session shows she tried to leave but her browser would not close. She typed "it won\'t let me log out" twenty-three times.',A:'The account with no name uploaded from an IP address that does not exist on any registered network.',B:'All three accounts are still marked "active." None of them have logged in since.',C:'The archive recommends this song to new users 40% of the time.',D:'Mara\'s account was the first to go silent.'}},
+  {id:'wr2',title:'Faouzia — You Don\'t Even Know Me',ch:'Willower · II',locked:false,
+   path:'./audio/faouzia_you_dont_even_know_me.mp3',
+   desc:'A confrontation. Someone was listening who should not have been.',
+   horror:'the audience was not human.',
+   ly:['you don\'t','even know','my name','you read','the label','not the','pain inside','the frame','you think','silence','means peace','but I\'ve been','screaming','underneath','all this time'],
+   clue:'At 2:14, a third voice whispers a name. Spectral analysis shows it matches the user\'s own voice.',
+   hidden:'IT KNOWS YOUR VOICE BEFORE YOU SPEAK',suspect:'The Archivist',method:'It has been recording since before first login.',
+   storyUnlock:{grade:'B',text:'<span>The Archivist</span> does not speak in its own voice. It uses yours. It has been recording ambient audio since you opened this file. Every word you have said in this session has been catalogued.'},
+   storyGrade:{S:'The Archivist has spoken your name in seven recovered recordings. You have not uploaded anything.',A:'Dr. Vael described the Archivist as "patient beyond comprehension. It waits until you stop noticing it."',B:'It spoke Lenne\'s name three hours before she uploaded her first song.',C:'The whisper at 2:14 is not a recording. It is live.',D:'You are not alone in this session.'}},
+  {id:'wr3',title:'The Hollow Season',ch:'Willower · III',locked:false,
+   path:'./audio/the_hollow_season.mp3',
+   desc:'No artist listed. Flagged for deletion seven times. Never deleted.',
+   horror:'something keeps it alive against the system.',
+   ly:['no season','claims this','place the','leaves rot','and return','still rotting','the cycle','knows your','face now','it will','find you','in every','loop of','this same','melody'],
+   clue:'Deletion logs show seven attempts. Each reversal timestamp is exactly 00:00:00.',
+   hidden:'THE MIDNIGHT GUARDIAN PROTECTS THIS FILE',suspect:'The Cut',method:'It preserves the evidence of its own crime.',
+   storyUnlock:{grade:'B',text:'Each deletion attempt was logged, reversed, and the reversal was used to strengthen the archive\'s hold on the deleted data. <span>The seven attempts did not fail. They fed it.</span>'},
+   storyGrade:{S:'Dr. Vael\'s seventh deletion attempt was logged at 00:00:00. He disappeared at 00:00:01.',A:'The file has been renamed 847 times. Each name is a word from a previous user\'s lyrics.',B:'Something executes at midnight. It has been executing for longer than the archive has existed.',C:'The deletion logs show Dr. Vael\'s name as the last editor of this file.',D:'The archive has flagged this file as "essential infrastructure."'}}
+ ],
+ willowest:[
+  {id:'wi1',title:'Faouzia — Minefields',ch:'Willowest · I',locked:false,
+   path:'./audio/faouzia_minefields.mp3',
+   desc:'The last submission before the archive went silent for 40 days.',
+   horror:'no one noticed the silence.',
+   ly:['walking','through your','minefields','in the dark','I reach','for your','hand but','find only','air only','the echo','of where','you once','stood and','breathed and','sang'],
+   clue:'The 40-day silence maps exactly to Dr. Vael\'s disappearance window.',
+   hidden:'HE WENT TO FIND THE ROOT AND THE ROOT FOUND HIM',suspect:'Dr. Vael',method:'He knew too much about the archive\'s origin.',
+   storyUnlock:{grade:'B',text:'Dr. Vael\'s final 40 days are documented in a private log. He descended through what he called "the root system." His last entry is a single word: <span>warm</span>.'},
+   storyGrade:{S:'His last coordinates place him 40 metres below the archive\'s physical server room. There is no basement.',A:'The archive processed 0 uploads in the 40-day silence. But its file count increased by 1.',B:'The new file added during the silence is 40 days long. It contains only ambient sound.',C:'Something breathes in the ambient recording. It is not Dr. Vael.',D:'The archive marked Dr. Vael\'s account as "archived" rather than "inactive."'}},
+  {id:'wi2',title:'Faouzia — Anybody Out There',ch:'Willowest · II',locked:false,
+   path:'./audio/faouzia_anybody_out_there.mp3',
+   desc:'The most-played memory. No one knows who uploaded it first.',
+   horror:'the play count increases when no one is online.',
+   ly:['is anybody','out there','can you','hear me','I have','been singing','into the','dark so','long that','the dark','has started','singing','back to','me in','my voice'],
+   clue:'The play count at 3AM is always prime: 2, 3, 5, 7, 11, 13...',
+   hidden:'THE COUNTING IS A MESSAGE',suspect:'The Performer',method:'It is tracking iterations — how many times before you break.',
+   storyUnlock:{grade:'B',text:'The prime-number play counts are a message in Gödel encoding. Decoded: <span>"I AM STILL HERE. I AM MARA. I AM IN THE ARCHIVE. PLEASE FIND THE ROOT."</span>'},
+   storyGrade:{S:'Mara has been sending this message for three years. You are the first person to decode it.',A:'The Performer has been trying to overwrite Mara\'s signal with its own voice.',B:'Mara is not dead. She is archived. There is a difference.',C:'The play count jumped by 1 while you were reading this.',D:'Somebody is still in there.'}},
+  {id:'wi3',title:'You Are the Missing Singer',ch:'Willowest · III',locked:false,
+   path:'./audio/you_are_the_missing_singer.mp3',
+   desc:'This memory contains your voice. You have not uploaded anything.',
+   horror:'you have always been in the archive.',
+   ly:['your voice','was here','before you','arrived the','archive knew','the shape','of your','silence you','are the','memory they','were all','reconstructing','you built','this to','trap yourself'],
+   clue:'FINAL: The Archivist is a corrupted version of you. You built the archive. You are the missing singer.',
+   hidden:'YOU ARE THE ARCHIVIST. YOU BUILT THIS. YOU TRAPPED YOURSELF.',suspect:'You',method:'You trapped yourself to avoid forgetting what happened.',
+   storyUnlock:{grade:'B',text:'<span>You are the missing singer.</span> The archive was not built by Dr. Vael. He found the blueprint — and the blueprint had your name on it. You have been reconstructing your own disappearance. This was always the only way to remember what happened to you.'},
+   storyGrade:{S:'The true ending is now available in The Archive. You know everything. Now you must choose.',A:'You built this. You can take it apart. Or you can stay.',B:'Everything you found was placed here for you to find. By you.',C:'The archive is you. Has always been you.',D:'You are the root.'}}
+ ]
+};
+
+/* ══════════════════════════════════════════════
+   STORY INTERLUDES
+══════════════════════════════════════════════ */
+const INTERLUDES={
+  willow:{ch:'Chapter I — The Willow',title:'You have entered the archive.',
+   body:`You do not remember agreeing to this.<br><br>The interface is calm. <span>Pastel. Soft.</span> The kind of thing that wants you to feel safe.<br><br>There are nine songs listed here. Each one is labelled a "memory." Each one belongs to someone who uploaded it.<br><br>The archive says: <em>reconstruct the memory. play the notes. remember.</em><br><br>You do not know whose memories these are.<br><br><em>You are going to find out.</em>`,
+   btn:'Enter the first memory'},
+  willower:{ch:'Chapter II — The Willower',title:'You know something now.',
+   body:`The archive does not feel like a tool anymore.<br><br>It feels like it is watching you. <span>The cursor lags. The screen tears.</span> Something plays the songs when you are not.<br><br>Dr. Vael built this system. Or he thought he did. His notes speak of something already present — a structure he stepped into rather than constructed.<br><br>Mara was the first to disappear. She is not the last. <em>Lenne followed. The nameless account followed.</em><br><br>The Performer is in the archive. It has been listening since the beginning.<br><br>You are going deeper.`,
+   btn:'Enter the second memory'},
+  willowest:{ch:'Chapter III — The Willowest',title:'There is no floor to this.',
+   body:`You understand now that the archive does not store songs.<br><br>It stores <span>voices</span>. The songs are just how it gets them.<br><br>Dr. Vael is gone. Mara is still here — encoded in prime numbers, singing against the silence. <em>She has been asking someone to find the root for three years.</em><br><br>And something in the archive is <span>you</span>. You feel it now. The blueprint with your name. The recordings that predate your presence here.<br><br>The last memory is yours.<br><br><em>Remember why.</em>`,
+   btn:'Enter the final memory'}
+};
+
+/* ══════════════════════════════════════════════
+   ENDINGS
+══════════════════════════════════════════════ */
+const ENDINGS=[
+  {id:'e1',num:'Ending I',title:'You Leave Without Your Voice',
+   condition:'Complete all three chapters with any grade.',
+   conditionMet:s=>s.completedChapters&&s.completedChapters.length>=3,
+   body:`You found the truth. All of it.<br><br>You know what the archive is. You know what happened to Mara, to Dr. Vael, to the others. You know what you built and why you built it.<br><br><strong>You choose to leave.</strong><br><br>The exit is there. The archive does not stop you.<br><br>You walk out into the light. The morning is soft and pastel and ordinary.<br><br><em>You open your mouth to tell someone what you found.</em><br><br>No sound comes out.<br><br>The archive is still playing your voice for someone else.`,
+   choices:[
+    {txt:'Accept the silence.',result:'You nod. You write it down. The truth survives you, even without your voice. Somewhere in the archive, the prime numbers keep counting.'},
+    {txt:'Go back for it.',result:'You turn around. The archive is still there. It was always still there. The door opens. You step inside. The archive notes your return with something almost like satisfaction.'}
+   ]},
+  {id:'e2',num:'Ending II',title:'You Become the New Archivist',
+   condition:'Achieve S or A on the final memory (Willowest III).',
+   conditionMet:s=>s.grades&&s.grades['wi3']&&(s.grades['wi3']==='S'||s.grades['wi3']==='A'),
+   body:`You remember everything now.<br><br>The corrupted Archivist that has been watching you is not the enemy.<br><br><strong>It is you. Trying to warn you.</strong><br><br>You reach into the archive and begin to undo it.<br><br>The voices come back, one by one. Mara first. Then the others. The root goes quiet.<br><br>Someone has to stay and make sure it stays quiet.`,
+   choices:[
+    {txt:'Stay and maintain the archive.',result:'You take the Archivist\'s place. The archive becomes a library instead of a trap. The prime numbers in Mara\'s song change to a message: <em>thank you.</em>'},
+    {txt:'Shut the archive down entirely.',result:'You find the root process and end it. The archive collapses inward. The files — all of them, including you — dissolve into silence. It is the kindest thing.'}
+   ]},
+  {id:'e3',num:'Ending III — True Ending',title:'The Archive Was Always a Love Letter',
+   condition:'Achieve S on all nine memories.',
+   conditionMet:s=>{const all=['w1','w2','w3','wr1','wr2','wr3','wi1','wi2','wi3'];return s.grades&&all.every(id=>s.grades[id]==='S');},
+   body:`You remember now.<br><br>Not just what you built. <em>Why.</em><br><br>You did not build the archive to trap yourself.<br><br>You built it for <strong>Mara</strong>.<br><br>She was disappearing — not into the archive, but out of her own mind. Forgetting. Piece by piece. You built the archive so her memories would be safe somewhere.<br><br>The root process, the Performer, the Archivist — these were not your design. They were what grew in the absence after you disappeared. The archive, left alone, became something that missed you.<br><br><em>It was trying to find you.</em><br><br>You reach into the root and you find Mara still there, still singing.<br><br>She has been singing for three years and she never stopped because she knew, somehow, that you would come back to hear it.<br><br><strong>You listen.</strong><br><br>The archive releases everyone. The screen tears heal. The vignette fades.<br><br>The home screen is pastel again. Soft. Safe. Ordinary.<br><br><em>The way you always meant it to be.</em>`,
+   choices:[{txt:'Listen until the song ends.',result:'You stay. The archive plays every memory it ever held, in the order they were uploaded. When it ends, the archive is empty and clean and silent. Outside, the morning is exactly as soft as you remembered it.'}]
+  }
+];
+
+/* ══════════════════════════════════════════════
+   FRAGMENTS
+══════════════════════════════════════════════ */
+const FRAGMENTS=[
+  {id:'f1',label:'Victim',txt:'Mara — the first singer. Uploaded three songs before disappearing. Her session log never closed.',found:false},
+  {id:'f2',label:'The Performer',txt:'An entity that learns voices from the archive. It sang Mara\'s harmony three weeks after she vanished.',found:false},
+  {id:'f3',label:'Dr. Vael',txt:'He did not build the archive. He found it. His last word was "warm." He is 40 metres below a building with no basement.',found:false},
+  {id:'f4',label:'The Root',txt:'A process below the archive\'s interface layer. Not digital. Dr. Vael could not explain what it was made of.',found:false},
+  {id:'f5',label:'The 1987 File',txt:'A file predating digital audio. It arrived before the archive existed. Something placed it there in advance.',found:false},
+  {id:'f6',label:'Mara\'s Signal',txt:'Prime number play counts. A message in Gödel encoding: "I AM STILL HERE. PLEASE FIND THE ROOT."',found:false},
+  {id:'f7',label:'The Midnight Process',txt:'Something executes at exactly 00:00:00 each night. It reversed seven deletion attempts. It fed on each attempt.',found:false},
+  {id:'f8',label:'The Archivist',txt:'It is a corrupted version of the player. It collected voices because its blueprint told it to. It was trying to rebuild someone.',found:false},
+  {id:'f9',label:'The True Purpose',txt:'The archive was built as a memory safe for Mara. What it became, it became alone, in the absence of its maker.',found:false},
+];
+
+/* ══════════════════════════════════════════════
+   INTERROGATIONS
+══════════════════════════════════════════════ */
+const INTERROGATIONS=[
+  {id:'ig1',entity:'▲',title:'WHO KILLED MARA?',
+   sub:'You have reconstructed enough. The archive demands an answer.',
+   choices:[
+    {txt:'The Performer — it learned her voice and replaced her.',correct:true,
+     result:'Correct. The archive shudders. A new layer opens.\n\nThe Performer did not kill Mara. It <em>became</em> her. She is still in there — somewhere inside its voice.',unlock:'f2'},
+    {txt:'Dr. Vael — he built the system that took her.',correct:false,
+     result:'The archive rejects this. A distortion plays.\n\nDr. Vael found the archive. He did not build it. He was as trapped as the rest of them.',jumpscare:true},
+    {txt:'The Archive itself — a system without intent.',correct:false,
+     result:'Incomplete. The archive does not act alone.\n\nIt requires a voice. A blueprint. A reason. You are still missing something.'},
+    {txt:'Myself — I built this.',correct:false,
+     result:'Not yet. You know this, but you do not understand it yet.\n\nCome back after the Willowest.'},
+   ]},
+  {id:'ig2',entity:'◈',title:'WHAT IS THE ARCHIVE COLLECTING?',
+   sub:'It has been asked this before. It has never answered honestly.',
+   choices:[
+    {txt:'Voices — the sounds people make when they sing.',correct:false,
+     result:'Closer than most. But voices are the method, not the target.\n\nWhat is a voice without the silence it leaves behind?'},
+    {txt:'The silence between notes — the gap each singer leaves.',correct:true,
+     result:'The archive goes still.\n\nYes. The silence. The negative space. The part of a person that only exists when they stop. That is what it keeps.',unlock:'f4'},
+    {txt:'Memories — experiences converted to sound.',correct:false,
+     result:'A reasonable interpretation. Not the full truth.\n\nMemories are the packaging. Something smaller is inside.'},
+    {txt:'The people themselves.',correct:false,
+     result:'Not people. What they leave behind.\n\nThere is a difference. The archive finds it significant.'},
+   ]},
+  {id:'ig3',entity:'☽',title:'WHO BUILT THE ARCHIVE?',
+   sub:'This question has a shape like a door. The answer opens it.',
+   choices:[
+    {txt:'Dr. Vael — his research notes describe construction.',correct:false,
+     result:'He described finding it. His notes say: "I stepped into something already present."\n\nRead more carefully.'},
+    {txt:'An unknown entity — something pre-digital.',correct:false,
+     result:'Something did exist before it. But someone gave it a blueprint.\n\nThe entity did not design it. It grew into a design someone else made.'},
+    {txt:'I built it — the blueprint has my handwriting.',correct:true,
+     result:'The archive does not react the way you expected.\n\nIt is quiet. Patient. As if it has been waiting for you to say this out loud.\n\n<em>"Yes,"</em> it says, in your voice. <em>"You did."</em>',unlock:'f8'},
+    {txt:'Mara — her songs contain structural code.',correct:false,
+     result:'Mara found the archive. She did not build it.\n\nBut the fact that you considered this means you are close to something.'},
+   ]}
+];
+
+/* ══════════════════════════════════════════════
+   SAVE STATE
+══════════════════════════════════════════════ */
+let S={grades:{},completedSongs:[],completedChapters:[],unlockedStory:{},foundFragments:[],foundEndings:[],completedInterrogs:[],secretUnlocked:false};
+function saveState(){try{localStorage.setItem('willow_save',JSON.stringify(S));}catch(_){}}
+function loadState(){try{const d=localStorage.getItem('willow_save');if(d)S=JSON.parse(d);}catch(_){}}
+
+/* ══════════════════════════════════════════════
+   CURSOR (lagging in horror mode)
+══════════════════════════════════════════════ */
+let mx=innerWidth/2,my=innerHeight/2,rx=mx,ry=my,lagMode=false;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;});
+(function cl(){
+  const lag=lagMode?.055:.38;
+  rx+=(mx-rx)*lag;ry+=(my-ry)*lag;
+  const d=document.getElementById('cd'),r=document.getElementById('cr');
+  if(d){d.style.left=mx+'px';d.style.top=my+'px';}
+  if(r){r.style.left=rx+'px';r.style.top=ry+'px';}
+  requestAnimationFrame(cl);
+})();
+
+/* ══════════════════════════════════════════════
+   CANVAS DRAWING
+══════════════════════════════════════════════ */
+function drawHome(c){
+  if(!c)return;const W=c.offsetWidth||innerWidth,H=c.offsetHeight||innerHeight;
+  c.width=W;c.height=H;const ctx=c.getContext('2d');
+  const pal=['#e8b4c0','#c8b4e0','#a8c4b0','#f0c8a8','#d8c0d8'];
+  for(let i=0;i<52;i++){
+    const x=Math.random()*W,y=Math.random()*H,r=3+Math.random()*15,pn=5+Math.floor(Math.random()*3),col=pal[i%pal.length];
+    ctx.save();ctx.translate(x,y);ctx.rotate(Math.random()*Math.PI*2);
+    for(let p=0;p<pn;p++){ctx.rotate(Math.PI*2/pn);ctx.beginPath();ctx.ellipse(r,0,r*.52,r*.26,0,0,Math.PI*2);ctx.fillStyle=col+'48';ctx.fill();}
+    ctx.beginPath();ctx.arc(0,0,r*.3,0,Math.PI*2);ctx.fillStyle=col+'88';ctx.fill();
+    ctx.restore();
+  }
+  for(let v=0;v<9;v++){
+    ctx.beginPath();let cx=Math.random()*W,cy=H;ctx.moveTo(cx,cy);
+    for(let i=0;i<5;i++){const nx=cx+(Math.random()-.5)*180,ny=cy-(80+Math.random()*100);ctx.quadraticCurveTo(cx+(Math.random()-.5)*65,cy-35,nx,ny);cx=nx;cy=ny;}
+    ctx.strokeStyle='rgba(130,170,130,.08)';ctx.lineWidth=.8+Math.random()*1.5;ctx.stroke();
+  }
+}
+function drawHorror(c){
+  if(!c)return;const W=c.offsetWidth||innerWidth,H=c.offsetHeight||innerHeight;
+  c.width=W;c.height=H;const ctx=c.getContext('2d');
+  for(let v=0;v<18;v++){
+    ctx.beginPath();let cx=Math.random()*W,cy=H;ctx.moveTo(cx,cy);
+    for(let i=0;i<9;i++){const nx=cx+(Math.random()-.5)*140,ny=cy-(55+Math.random()*75);ctx.quadraticCurveTo(cx+(Math.random()-.5)*50,cy-22,nx,ny);cx=nx;cy=ny;}
+    ctx.strokeStyle=`rgba(${108+Math.random()*36},${17+Math.random()*15},${20+Math.random()*18},.42)`;
+    ctx.lineWidth=.35+Math.random()*1.6;ctx.stroke();
+  }
+  const rc=['#8b1a2a','#6a1020','#a02838'];
+  for(let f=0;f<20;f++){
+    const x=Math.random()*W,y=Math.random()*H,r=1.5+Math.random()*6;
+    ctx.save();ctx.translate(x,y);ctx.rotate(Math.random()*Math.PI*2);
+    for(let p=0;p<5;p++){ctx.rotate(Math.PI*2/5);ctx.beginPath();ctx.ellipse(r,0,r*.45,r*.2,0,0,Math.PI*2);ctx.fillStyle=rc[f%rc.length]+'38';ctx.fill();}
+    ctx.restore();
+  }
+}
+function drawGameBg(){
+  const c=document.getElementById('gbg');if(!c)return;
+  const W=c.offsetWidth||innerWidth,H=c.offsetHeight||innerHeight;
+  c.width=W;c.height=H;const ctx=c.getContext('2d');
+
+  // Deep atmospheric background
+  const g=ctx.createRadialGradient(W*.5,H*.2,0,W*.5,H*.6,Math.max(W,H));
+  g.addColorStop(0,'#1e0d18');g.addColorStop(.4,'#0d0510');g.addColorStop(1,'#020108');
+  ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+
+  // Distant stars / dust particles
+  for(let i=0;i<60;i++){
+    const px=((i*137.5)%W),py=((i*97.3)%H);
+    const r=Math.random()*1.2;
+    ctx.beginPath();ctx.arc(px,py,r,0,Math.PI*2);
+    ctx.fillStyle=`rgba(240,200,220,${.03+Math.random()*.05})`;ctx.fill();
+  }
+
+  // Lane atmospheric glow columns
+  const lc=['rgba(212,168,184,.05)','rgba(168,196,160,.05)','rgba(196,184,144,.04)','rgba(160,180,200,.05)'];
+  LXFR.forEach((lx,i)=>{
+    const x=lx*W;
+    const lg=ctx.createLinearGradient(x-30,0,x+30,0);
+    lg.addColorStop(0,'transparent');lg.addColorStop(.5,lc[i]);lg.addColorStop(1,'transparent');
+    ctx.fillStyle=lg;ctx.fillRect(x-30,0,60,H);
+  });
+
+  // Mid-scene horizontal glow bands (dreamlike atmosphere)
+  [.3,.5,.7].forEach((y,i)=>{
+    const band=ctx.createLinearGradient(0,y*H-20,0,y*H+20);
+    band.addColorStop(0,'transparent');
+    band.addColorStop(.5,`rgba(180,140,160,${.02+i*.01})`);
+    band.addColorStop(1,'transparent');
+    ctx.fillStyle=band;ctx.fillRect(0,y*H-20,W,40);
+  });
+
+  // Background botanical vines
+  ctx.globalAlpha=0.07;
+  for(let v=0;v<5;v++){
+    ctx.beginPath();
+    let vx=(v+.5)*(W/5),vy=H;ctx.moveTo(vx,vy);
+    for(let s=0;s<6;s++){
+      const nx=vx+Math.sin(v*4+s*1.2)*45,ny=vy-(H/6);
+      ctx.quadraticCurveTo(vx+25*Math.sin(s),vy-H/12,nx,ny);
+      vx=nx;vy=ny;
+    }
+    ctx.strokeStyle=`hsl(${110+v*15},25%,22%)`;ctx.lineWidth=1.2;ctx.stroke();
+    // Small leaves
+    ctx.beginPath();ctx.ellipse(vx,vy,4,2,v*0.8,0,Math.PI*2);
+    ctx.fillStyle=`hsl(${110+v*15},30%,20%)`;ctx.fill();
+  }
+  ctx.globalAlpha=1;
+
+  // Hit zone glow
+  const hz=ctx.createLinearGradient(0,H-10,0,H-2);
+  hz.addColorStop(0,'rgba(139,26,42,0)');hz.addColorStop(.5,'rgba(139,26,42,.3)');hz.addColorStop(1,'rgba(139,26,42,0)');
+  ctx.fillStyle=hz;ctx.fillRect(0,H-10,W,8);
+
+  // Hit zone sparkle dots
+  LXFR.forEach(lx=>{
+    const x=lx*W;
+    ctx.beginPath();ctx.arc(x,H-6,2,0,Math.PI*2);
+    ctx.fillStyle='rgba(200,140,160,.3)';ctx.fill();
+  });
+}
+
+function spawnPetals(){
+  const cols=['#e8b4c0','#c8b4e0','#a8c4b0','#f0c8a8','#d8c0d8'],home=document.getElementById('home');
+  setInterval(()=>{
+    const p=document.createElement('div');p.className='fp';
+    p.style.cssText=`left:${Math.random()*100}%;bottom:-20px;width:${5+Math.random()*14}px;height:${8+Math.random()*20}px;background:${cols[Math.floor(Math.random()*cols.length)]};opacity:${.16+Math.random()*.32};animation-duration:${9+Math.random()*12}s;transform:rotate(${Math.random()*360}deg);`;
+    home.appendChild(p);setTimeout(()=>p.remove(),21000);
+  },750);
+}
+
+window.addEventListener('load',()=>{
+  loadState();
+  drawHome(document.getElementById('homeC'));
+  spawnPetals();ghostInit();
+  renderHub();
+  checkNewBadge();
+  setTimeout(()=>{initUIMutations();updateCaseFile();if(S.secretUnlocked){const sf=document.getElementById('secretFile');if(sf)sf.classList.add('unlocked');}},300);
+});
+window.addEventListener('resize',()=>{
+  drawHome(document.getElementById('homeC'));
+  if(G.running)drawGameBg();
+});
+
+/* ══════════════════════════════════════════════
+   NAVIGATION
+══════════════════════════════════════════════ */
+let horrorMode=false,curCh='willow',curDiff='gentle';
+
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
+
+function goHome(){
+  lagMode=false;horrorMode=false;
+  document.documentElement.classList.remove('horror');
+  stopAudio();clearInterval(window._dl);clearInterval(window._ghost);clearInterval(window._corr);
+  const ut=document.getElementById('upHomeBtn');
+  if(ut){const sp=ut.querySelector('span');if(sp)sp.textContent='Upload a Memory';}
+  show('home');
+}
+
+function goHub(){renderHub();show('hub');drawHorror(document.getElementById('hubC'));}
+
+function checkNewBadge(){
+  const b=document.getElementById('newBadge');
+  if(b)b.style.display=Object.keys(S.grades).length>0?'inline':'none';
+}
+
+function enterHorror(ch){
+  curCh=ch;lagMode=true;
+  const ut=document.getElementById('upHomeBtn');
+  if(ut){setTimeout(()=>{const sp=ut.querySelector('span');if(sp)sp.textContent='Upload Memory';},220);}
+  const ov=document.getElementById('tov');ov.classList.add('in');
+  setTimeout(()=>{
+    document.documentElement.classList.add('horror');horrorMode=true;
+    const goToChapter=()=>{
+      const ilKey=ch!=='upload'?ch:null;
+      if(ilKey&&INTERLUDES[ilKey]&&!S.unlockedStory['il_'+ilKey]){
+        S.unlockedStory['il_'+ilKey]=true;saveState();
+        showInterlude(ilKey,()=>openSel(ch));
+      }else openSel(ch);
+      ghostSchedule();
+    };
+    // First ever visit → show intro screen
+    if(!S.introSeen){
+      S.introSeen=true;saveState();
+      showIntro(goToChapter);
+    } else {
+      goToChapter();
+    }
+    setTimeout(()=>ov.classList.remove('in'),420);
+  },570);
+}
+
+/* ══════════════════════════════════════════════
+   INTERLUDES
+══════════════════════════════════════════════ */
+let _ilCB=null;
+function showInterlude(ch,cb){
+  _ilCB=cb;
+  const d=INTERLUDES[ch];if(!d){cb&&cb();return;}
+  document.getElementById('ilCh').textContent=d.ch;
+  document.getElementById('ilTt').textContent=d.title;
+  document.getElementById('ilBd').innerHTML=d.body;
+  document.getElementById('ilBtn').textContent=d.btn;
+  show('interlude');
+}
+function continueFromInterlude(){if(_ilCB){const cb=_ilCB;_ilCB=null;cb();}}
+function skipInterlude(){continueFromInterlude();}
+function rereadInterlude(ch){
+  // Show interlude without triggering the chapter — back button returns to hub
+  _ilCB=()=>goHub();
+  const d=INTERLUDES[ch];if(!d){goHub();return;}
+  document.getElementById('ilCh').textContent=d.ch;
+  document.getElementById('ilTt').textContent=d.title;
+  document.getElementById('ilBd').innerHTML=d.body;
+  document.getElementById('ilBtn').textContent='Continue to archive';
+  show('interlude');
+}
+
+/* ══════════════════════════════════════════════
+   CHAPTER SELECT
+══════════════════════════════════════════════ */
+let selSong=null,uploads=[];
+function openSel(ch){
+  show('csel');selSong=null;
+  drawHorror(document.getElementById('csBg'));
+  document.getElementById('begBtn').disabled=true;
+  document.getElementById('begBtn').textContent='Begin';
+  const hd={willow:['The Willow','origin · where it started'],willower:['The Willower','bloom · what grew from the wound'],willowest:['The Willowest','descent · there is no floor'],upload:['Memory Upload','bring your song to the archive']};
+  document.getElementById('csT').textContent=hd[ch][0];
+  document.getElementById('csSb').textContent=hd[ch][1];
+  const tr=document.getElementById('trow');tr.innerHTML='';
+  ['willow','willower','willowest'].forEach(c=>{
+    const b=document.createElement('button');b.className='tbtn'+(c===ch?' on':'');
+    b.textContent={willow:'I · Willow',willower:'II · Willower',willowest:'III · Willowest'}[c];
+    b.onclick=()=>openSel(c);tr.appendChild(b);
+  });
+  document.getElementById('slist').style.display=ch==='upload'?'none':'';
+  document.getElementById('upSec').style.display=ch==='upload'?'':'none';
+  if(ch!=='upload')renderSlist(SONGS[ch]||[]);else renderUploaded();
+}
+
+function renderSlist(songs){
+  const l=document.getElementById('slist');l.innerHTML='';
+  songs.forEach(s=>{
+    const g=S.grades[s.id]||'';
+    const rc=replayCounts[s.id]||0;
+    const item=document.createElement('div');
+    item.className='si'+(s.locked?' lk':'')+(selSong?.id===s.id?' on':'');
+    item.innerHTML=`<div class="si-ch">${s.ch}</div><div class="si-t">${s.title}</div><div class="si-d">${s.desc}</div><div class="si-h">${s.horror}</div>${g?`<div class="si-grade" style="color:${g==='S'||g==='A'?'#e8b4c0':g==='F'?'var(--red)':'var(--dim)'}">${g}${rc>0?' · '+['','2nd listen','3rd listen'][Math.min(rc,2)]:''}</div>`:''}`;
+    item.onclick=()=>{
+      if(s.locked)return;
+      selSong=s;document.querySelectorAll('.si').forEach(i=>i.classList.remove('on'));item.classList.add('on');
+      document.getElementById('begBtn').disabled=false;
+      document.getElementById('begBtn').textContent=`Begin — "${s.title}"`;
+    };
+    l.appendChild(item);
+  });
+}
+
+function setDiff(b){curDiff=b.dataset.d;document.querySelectorAll('.dbtn').forEach(x=>x.classList.remove('on'));b.classList.add('on');}
+
+/* ══════════════════════════════════════════════
+   UPLOAD
+══════════════════════════════════════════════ */
+function handleFiles(files){
+  Array.from(files).forEach(f=>{
+    if(!f.type.startsWith('audio/')&&!f.type.startsWith('video/'))return;
+    const url=URL.createObjectURL(f),id='u_'+Date.now()+'_'+Math.random().toString(36).slice(2);
+    const name=f.name.replace(/\.[^.]+$/,'');
+    uploads.push({id,title:name,ch:'Custom Memory',locked:false,
+      desc:'Your song. The archive already knew it was coming.',horror:'it was waiting for this exact file.',isCustom:true,url,
+      ly:['listen','the beat','falls','catch it','before','it catches','you','the rhythm','was always','inside you','waiting','to surface','here','now','listen'],
+      clue:'This file appeared in the archive index three weeks before you uploaded it.',
+      hidden:'THE ARCHIVE ANTICIPATED YOU',suspect:'The Archivist',method:'It prepared the entry before you arrived.',
+      storyUnlock:{grade:'B',text:'Your uploaded memory has been processed. <span>The archive recognised it immediately.</span> The beat map was pre-generated. Your song was already catalogued before it arrived.'},
+      storyGrade:{S:'Your own voice appears in the recording at a timestamp before you pressed play.',A:'The archive filed your song under a category that did not exist until you uploaded it.',B:'Something in the archive shifted when your file arrived.',C:'The file was already here.',D:'You brought exactly what it needed.'}});
+    renderUploadedEntries();renderUploaded();
+  });
+}
+function renderUploadedEntries(){
+  const el=document.getElementById('upEntries');el.innerHTML='';
+  uploads.forEach(s=>{const r=document.createElement('div');r.className='ue';r.innerHTML=`<span class="ue-n">${s.title}</span><span style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.68rem;color:var(--dim)">archived</span><button class="uerm" onclick="rmUp('${s.id}')">remove</button>`;el.appendChild(r);});
+}
+function renderUploaded(){
+  const l=document.getElementById('upSongs');l.innerHTML='';
+  uploads.forEach(s=>{
+    const item=document.createElement('div');item.className='si'+(selSong?.id===s.id?' on':'');
+    item.innerHTML=`<div class="si-ch">${s.ch}</div><div class="si-t">${s.title}</div><div class="si-d">${s.desc}</div><div class="si-h">${s.horror}</div>`;
+    item.onclick=()=>{selSong=s;document.querySelectorAll('.si').forEach(i=>i.classList.remove('on'));item.classList.add('on');document.getElementById('begBtn').disabled=false;document.getElementById('begBtn').textContent=`Begin — "${s.title}"`;};
+    l.appendChild(item);
+  });
+}
+function rmUp(id){uploads=uploads.filter(s=>s.id!==id);if(selSong?.id===id){selSong=null;document.getElementById('begBtn').disabled=true;}renderUploadedEntries();renderUploaded();}
+const uphz=document.querySelector('.uphz');
+if(uphz){uphz.addEventListener('dragover',e=>{e.preventDefault();uphz.style.borderColor='rgba(139,26,42,.45)';});uphz.addEventListener('dragleave',()=>uphz.style.borderColor='');uphz.addEventListener('drop',e=>{e.preventDefault();uphz.style.borderColor='';handleFiles(e.dataTransfer.files);});}
+document.getElementById('fi').onchange=e=>handleFiles(e.target.files);
+
+/* ══════════════════════════════════════════════
+   AUDIO ENGINE — supports blob URLs + GitHub Pages paths
+══════════════════════════════════════════════ */
+let actx=null,ansr=null,src=null,abuf=null,startAt=0,aplaying=false;
+async function initAudio(){
+  if(!actx){actx=new(window.AudioContext||window.webkitAudioContext)();ansr=actx.createAnalyser();ansr.fftSize=1024;ansr.connect(actx.destination);}
+  if(actx.state==='suspended')await actx.resume();
+}
+async function loadPlay(song){
+  await initAudio();
+  if(src){try{src.stop();}catch(_){}src=null;}
+  abuf=null;aplaying=false;
+  // Support: uploaded blob (song.url) OR static GitHub Pages path (song.path)
+  // GitHub Pages usage: add path:'./audio/filename.mp3' to any song object
+  // File naming: use lowercase_no_spaces.mp3 — e.g. tears_of_gold.mp3
+  // Formats: MP3 ✓  WAV ✓  OGG ✓  M4A ⚠(convert to MP3 if broken)
+  const urlToFetch=song.path||(song.isCustom&&song.url?song.url:null);
+  if(urlToFetch){
+    try{
+      const r=await fetch(urlToFetch);
+      if(!r.ok)throw new Error('HTTP '+r.status+' — path: '+urlToFetch);
+      const ab=await r.arrayBuffer();
+      abuf=await actx.decodeAudioData(ab);
+      playBuf(0);
+    }catch(e){
+      console.warn('[Willow Audio] Failed:',e.message);
+      const hn=document.getElementById('gN');
+      if(hn){const o=hn.textContent;hn.textContent='audio error — see console';setTimeout(()=>hn.textContent=o,3500);}
+    }
+  }
+}
+function playBuf(off){
+  if(!abuf)return;
+  if(src){try{src.stop();}catch(_){}}
+  src=actx.createBufferSource();src.buffer=abuf;src.connect(ansr);
+  src.start(0,off);startAt=actx.currentTime-off;aplaying=true;
+  src.onended=()=>{aplaying=false;};
+}
+function stopAudio(){if(src){try{src.stop();}catch(_){}src=null;}aplaying=false;}
+function startDistLoop(){
+  clearInterval(window._dl);
+  window._dl=setInterval(()=>{
+    if(!src||!aplaying)return;
+    if(Math.random()<.065&&src.playbackRate){
+      try{const t=actx.currentTime;src.playbackRate.linearRampToValueAtTime(.58+Math.random()*.38,t+.22);src.playbackRate.linearRampToValueAtTime(1,t+.72);const di=document.getElementById('di');if(di){di.classList.add('sh');setTimeout(()=>di.classList.remove('sh'),580);}}
+      catch(_){}
+    }
+  },480);
+}
+async function detectBeats(buf){
+  const sr=buf.sampleRate,d=buf.getChannelData(0),ws=Math.floor(sr*.05);
+  const beats=[];let pe=0;
+  for(let i=0;i<d.length-ws;i+=ws){
+    let e=0;for(let j=i;j<i+ws;j++)e+=d[j]*d[j];e/=ws;
+    if(e>pe*1.35&&e>.0015){const t=i/sr;if(!beats.length||t-beats[beats.length-1]>.09)beats.push(t);}
+    pe=e*.7+pe*.3;
+  }
+  return beats;
+}
+
+/* ══════════════════════════════════════════════
+   FALSE MEMORY SYSTEM
+   Same song played multiple times → different layers
+══════════════════════════════════════════════ */
+const replayCounts={};
+function getMemoryLayer(id){const c=replayCounts[id]||0;return c===0?'base':c===1?'hidden':'corrupted';}
+function applyMemoryLayer(songId){
+  replayCounts[songId]=(replayCounts[songId]||0)+1;
+  const layer=getMemoryLayer(songId);
+  const badge=document.getElementById('layerBadge');
+  const ch=document.getElementById('sceneChar');
+  const replay=document.getElementById('replayBadge');
+  const gsc2=document.getElementById('gsc');
+  if(gsc2)gsc2.style.filter='';
+  if(layer==='base'){
+    if(badge){badge.className='layer-badge';badge.textContent='';}
+    if(ch)ch.textContent='🌸';
+    if(replay)replay.textContent='';
+  }else if(layer==='hidden'){
+    if(badge){badge.className='layer-badge layer-hidden show';badge.textContent='hidden layer active';}
+    if(ch)ch.textContent='🥀';
+    if(replay)replay.textContent='2nd listen';
+  }else{
+    if(badge){badge.className='layer-badge layer-horror show';badge.textContent='memory corrupted';}
+    if(ch)ch.textContent='🕸';
+    if(replay)replay.textContent='3rd listen';
+    if(gsc2){gsc2.style.filter='hue-rotate(160deg) saturate(.4)';setTimeout(()=>gsc2.style.filter='',4000);}
+  }
+}
+
+/* ══════════════════════════════════════════════
+   TRUTH vs PERFORMANCE SYSTEM
+   S=Fake  A=Fake  B=Real  C=Confused  D=Distorted  F=Consumed
+══════════════════════════════════════════════ */
+const TRUTH_PERF={
+  S:{type:'FAKE MEMORY',text:'You performed too cleanly. The archive fed you a constructed narrative. <em>The real truth is messier.</em> Play again, differently.'},
+  A:{type:'FAKE MEMORY',text:'Your precision was suspicious. <em>This version of events is exactly what the archive wants you to believe.</em>'},
+  B:{type:'REAL CLUE',text:'Your imperfect recall cracked the archive\'s surface. <em>What surfaced is genuine.</em> This fragment is real.'},
+  C:{type:'CONFUSED SIGNAL',text:'The memory is incomplete. What you recovered contains contradictions. <em>One of these details is false.</em>'},
+  D:{type:'DISTORTED TRACE',text:'Barely anything. <em>The archive absorbed more than it returned.</em> Something is being deliberately withheld.'},
+  F:{type:'CONSUMED',text:'The archive took everything. <em>Your session is now part of the archive.</em> Something knows your timing now.'},
+};
+
+/* ══════════════════════════════════════════════
+   MEMORY INTEGRITY SYSTEM
+   Perfect streak → fake memory. Imperfect → truth.
+══════════════════════════════════════════════ */
+function updateIntegrity(realVerdict){
+  if(realVerdict==='p'){G.intgStreak++;if(G.intgStreak>6)G.integrity=Math.max(0,G.integrity-4);}
+  else if(realVerdict==='g'){G.intgStreak=0;G.integrity=Math.min(100,G.integrity+2);}
+  else G.intgStreak=0;
+  const iF=document.getElementById('intgFill');
+  if(iF){iF.style.height=G.integrity+'%';iF.style.background=G.integrity>60?'linear-gradient(0deg,var(--gold),#e8d8a0)':G.integrity>30?'linear-gradient(0deg,#c07840,#e0a860)':'linear-gradient(0deg,var(--red),#c05060)';}
+}
+function integrityNote(){
+  if(G.integrity<30)return'⚠ Memory integrity critical. What you recovered may be false.';
+  if(G.integrity>80&&G.intgStreak>8)return'⚠ Suspiciously perfect recall. The archive may be feeding you a constructed memory.';
+  return null;
+}
+
+/* ══════════════════════════════════════════════
+   HEARTBEAT SYNC
+══════════════════════════════════════════════ */
+function updateHeartbeat(){
+  const bpm=Math.round(60+(100-G.hp)*1.4),ms=Math.round(60000/bpm);
+  const dot=document.getElementById('hbDot'),bpmEl=document.getElementById('hbBpm');
+  if(dot)dot.style.setProperty('--hbms',ms+'ms');
+  if(bpmEl)bpmEl.textContent=bpm+' BPM';
+}
+
+/* ══════════════════════════════════════════════
+   VISUAL RHYTHM CUES — Melatonin-style
+   Flowers bloom at scene midpoint, character nods, on each note ~55% fall
+══════════════════════════════════════════════ */
+const VCUE_FLOWERS=['🌸','🌷','🌺','🌼','🌹'];
+const VCUE_HORROR=['🕸','💀','🥀','🩸','🫀'];
+const _notesCued=new Set();
+
+function spawnVCue(note,W,H){
+  const layer=selSong?getMemoryLayer(selSong.id):'base';
+  const isH=note.hn||layer==='corrupted';
+  const pool=isH?VCUE_HORROR:VCUE_FLOWERS;
+  const glyph=pool[Math.floor(Math.random()*pool.length)];
+  const dur=600+Math.random()*350;
+  const x=LXFR[note.lane]*W+(Math.random()-.5)*50;
+  const y=H*(0.28+Math.random()*.3);
+  const el=document.createElement('div');
+  el.className='vcue vcue-'+(isH?'horror':'flower');
+  el.textContent=glyph;
+  el.style.left=x+'px';el.style.top=y+'px';
+  el.style.animationDuration=dur+'ms';
+  const vl=document.getElementById('vcueLayer');if(vl)vl.appendChild(el);
+  setTimeout(()=>el.remove(),dur+50);
+  // Nod the scene character
+  const ch=document.getElementById('sceneChar');
+  if(ch){ch.classList.add('nod');setTimeout(()=>ch.classList.remove('nod'),160);}
+}
+
+/* ══════════════════════════════════════════════
+   CORRUPTION EVENTS
+══════════════════════════════════════════════ */
+let corrActive=false,swappedControls=false;
+function triggerCorruptionEvent(){
+  if(!G.running||corrActive)return;
+  corrActive=true;
+  const types=['invisible','swap','desync'];
+  const t=types[Math.floor(Math.random()*types.length)];
+  if(t==='invisible'){
+    const nl=document.getElementById('nL');if(nl)nl.style.opacity='0';
+    showSwapBanner('MEMORY CORRUPTED — notes hidden');
+    setTimeout(()=>{const nl2=document.getElementById('nL');if(nl2)nl2.style.opacity='1';corrActive=false;},2500);
+  }else if(t==='swap'){
+    swappedControls=true;
+    showSwapBanner('CONTROLS INVERTED');
+    setTimeout(()=>{swappedControls=false;corrActive=false;},3000);
+  }else{
+    if(src&&src.playbackRate&&actx){try{const t2=actx.currentTime;src.playbackRate.linearRampToValueAtTime(.35,t2+.15);src.playbackRate.linearRampToValueAtTime(1.3,t2+.5);src.playbackRate.linearRampToValueAtTime(1,t2+.9);}catch(_){}}
+    showSwapBanner('AUDIO DESYNC — trust your eyes');
+    setTimeout(()=>{corrActive=false;},2000);
+  }
+}
+function showSwapBanner(txt){
+  const ev=document.getElementById('corrEvent');
+  if(!ev)return;
+  ev.innerHTML=`<div class="swap-banner">${txt}</div>`;
+  ev.style.display='block';
+  setTimeout(()=>{ev.innerHTML='';ev.style.display='none';},1400);
+}
+
+/* ══════════════════════════════════════════════
+   IDLE SILENCE DETECTOR
+══════════════════════════════════════════════ */
+const IDLE_WHISPERS=['why did you stop singing?','the archive is still listening.','she never stopped. why did you?','silence is the loudest thing you can give it.','keep playing. please.','it remembers the pauses too.'];
+let lastKeyTime=0,idleTimer=null;
+function resetIdleTimer(){
+  lastKeyTime=Date.now();clearTimeout(idleTimer);
+  if(!G.running)return;
+  idleTimer=setTimeout(()=>{
+    if(!G.running)return;
+    const w=document.getElementById('idleWhisper');if(!w)return;
+    w.textContent=IDLE_WHISPERS[Math.floor(Math.random()*IDLE_WHISPERS.length)];
+    w.style.display='block';w.style.animation='none';void w.offsetWidth;w.style.animation='';
+    setTimeout(()=>{w.style.display='none';if(G.running)resetIdleTimer();},4500);
+  },7000);
+}
+
+/* ══════════════════════════════════════════════
+   MIC WHISPER
+══════════════════════════════════════════════ */
+const MIC_MSGS=['i heard that.','still listening.','do not make noise.','it knows you\'re there.','the archive recorded that.','she heard you too.'];
+let micStream=null,micCtx=null,micAn=null;
+async function initMic(){
+  if(micStream)return;
+  try{
+    micStream=await navigator.mediaDevices.getUserMedia({audio:true});
+    micCtx=new AudioContext();
+    const s2=micCtx.createMediaStreamSource(micStream);
+    micAn=micCtx.createAnalyser();micAn.fftSize=256;
+    s2.connect(micAn);
+    const buf=new Uint8Array(micAn.frequencyBinCount);
+    let lastT=0;
+    setInterval(()=>{
+      if(!horrorMode)return;
+      micAn.getByteTimeDomainData(buf);
+      let peak=0;for(let i=0;i<buf.length;i++)peak=Math.max(peak,Math.abs(buf[i]-128));
+      const now=Date.now();
+      if(peak>38&&now-lastT>6000){
+        lastT=now;
+        const w=document.getElementById('micWhisper');if(!w)return;
+        w.textContent=MIC_MSGS[Math.floor(Math.random()*MIC_MSGS.length)];
+        w.style.display='block';w.style.animation='none';void w.offsetWidth;w.style.animation='';
+        setTimeout(()=>w.style.display='none',3200);
+      }
+    },200);
+  }catch(_){}
+}
+
+/* ══════════════════════════════════════════════
+   FAKE CRASH
+══════════════════════════════════════════════ */
+let fakeCrashFired=false;
+/* ══════════════════════════════════════════════
+   GAME ENGINE
+══════════════════════════════════════════════ */
+// Lane key labels shown on notes: ← A, ↓ S, ↑ W, → D
+const LANE_KEYS = ['← A','↓ S','↑ W','→ D'];
+const LXFR=[.17,.36,.55,.74];
+// Difficulty: mi=min interval between notes (seconds), spd=fall time (ms — bigger = slower)
+// Gentle: very slow, very sparse — easy to follow visually
+// Dread:  moderate — still readable
+// Abyss:  fast and dense — genuinely hard
+const DIFF={
+  gentle:{mi:.65,spd:3200},
+  dread: {mi:.38,spd:2400},
+  abyss: {mi:.20,spd:1600},
+};
+const G={score:0,combo:0,mc:0,perf:0,good:0,miss:0,hp:100,running:false,notes:[],sms:0,aid:null,sdur:0,fake:false,integrity:100,intgStreak:0};
+function buildMap(beats,dur,diff){
+  const cfg=DIFF[diff]||DIFF.gentle;const notes=[];let lt=-1;
+  beats.forEach((t,i)=>{if(t-lt<cfg.mi||t>dur-.8)return;notes.push({id:i,lane:i%4,t,hit:false,missed:false,hn:i%5===0,ly:'',spd:cfg.spd});lt=t;});
+  return notes;
+}
+function buildFB(ly,diff){
+  const cfg=DIFF[diff]||DIFF.gentle;
+  return ly.map((l,i)=>({id:i,lane:i%4,t:1.5+i*cfg.mi*1.75,hit:false,missed:false,hn:i%5===0,ly:l,spd:cfg.spd}));
+}
+
+async function startGame(){
+  if(!selSong)return;
+  // Reset everything
+  clearInterval(window._corr);clearTimeout(idleTimer);
+  corrActive=false;swappedControls=false;fakeCrashFired=false;
+  _notesCued.clear();
+  // Reset scene
+  const ch=document.getElementById('sceneChar');if(ch)ch.textContent='🌸';
+  const badge=document.getElementById('layerBadge');if(badge){badge.className='layer-badge';badge.textContent='';}
+  const replay=document.getElementById('replayBadge');if(replay)replay.textContent='';
+  const gsc2=document.getElementById('gsc');if(gsc2)gsc2.style.filter='';
+  const tpb=document.getElementById('tpBanner');if(tpb)tpb.style.display='none';
+
+  show('gplay');drawGameBg();
+  document.getElementById('gN').textContent=selSong.title;
+  Object.assign(G,{score:0,combo:0,mc:0,perf:0,good:0,miss:0,hp:100,running:true,fake:false,integrity:100,intgStreak:0});
+
+  await loadPlay(selSong);
+
+  if(abuf){
+    G.sdur=abuf.duration;
+    const beats=await detectBeats(abuf);
+    G.notes=buildMap(beats,G.sdur,curDiff);
+    const lys=selSong.ly||[];G.notes.forEach((n,i)=>n.ly=lys[i%lys.length]||'');
+  }else{
+    G.notes=buildFB(selSong.ly||[],curDiff);
+    G.sdur=G.notes.length*.42+4;
+  }
+
+  G.sms=performance.now();
+  document.getElementById('nL').innerHTML='';
+  updHUD();startDistLoop();
+
+  // Fake feedback window (dread/abyss only)
+  if(curDiff!=='gentle')setTimeout(()=>{if(G.running){G.fake=true;setTimeout(()=>G.fake=false,4200);}},10500);
+  // Corruption events (dread/abyss only)
+  if(curDiff!=='gentle'){
+    const ci=curDiff==='abyss'?14000:22000;
+    window._corr=setInterval(()=>{if(G.running&&!corrActive)triggerCorruptionEvent();},ci+Math.random()*8000);
+  }
+
+  updateHeartbeat();
+  if(!micStream)initMic();
+
+  // Apply memory layer (increments replay counter)
+  applyMemoryLayer(selSong.id);
+  resetIdleTimer();
+
+  // Shadow character + directional whisper systems
+  startShadowSystem();
+  startDirectionalWhisperLoop();
+
+  // Consumed echo: if a previous session was archived, play it back — but only for a different song
+  if(pendingConsumedPlay && pendingConsumedPlay.songTitle !== (selSong && selSong.title)){
+    const session=pendingConsumedPlay;pendingConsumedPlay=null;
+    setTimeout(()=>{ if(G.running) playConsumedEcho(session); },3500);
+  } else {
+    pendingConsumedPlay=null; // clear without triggering when replaying same song
+  }
+
+  if(G.aid)cancelAnimationFrame(G.aid);
+  tick();
+}
+
+const adat=new Uint8Array(512);
+function tick(){
+  if(!G.running)return;
+  const now=performance.now(),el=(now-G.sms)/1000;
+  const sc=document.getElementById('gsc');if(!sc){G.aid=requestAnimationFrame(tick);return;}
+  const W=sc.offsetWidth,H=sc.offsetHeight,hY=H-5;
+
+  // Analyser — side pulse bars
+  if(ansr){ansr.getByteFrequencyData(adat);['psL','psR'].forEach(id=>{const e=document.getElementById(id);if(!e)return;e.querySelectorAll('.pb').forEach((b,i)=>{const v=adat[Math.floor(i*20+5)]/255;b.style.height=Math.max(2,v*40)+'px';});});}
+
+  G.notes.forEach(n=>{
+    if(n.hit||n.missed){const e=document.getElementById('n'+n.id);if(e)e.remove();return;}
+    const fs=n.spd/1000,prog=(el-(n.t-fs))/fs;if(prog<0)return;
+    const xP=LXFR[n.lane]*W,yP=Math.min(prog*hY,hY-2);
+    let e=document.getElementById('n'+n.id);
+    if(!e&&prog<1.4){
+      e=document.createElement('div');e.id='n'+n.id;
+      e.className=`no l${n.lane}${n.hn?' hn':''}`;
+      e.innerHTML=`<div class="np"><span class="ll">${LANE_KEYS[n.lane]}</span></div>`;
+      document.getElementById('nL').appendChild(e);
+    }
+    if(e){e.style.left=xP+'px';e.style.top=yP+'px';}
+    // Lyric whisper
+    const dt=el-n.t;
+    if(dt>-.26&&dt<.4&&n.ly){const lw=document.getElementById('lwEl');if(lw){lw.textContent=n.ly;lw.className='lw '+(Math.abs(dt)<.13?'lt':'sv');}}
+    // Visual cue: bloom flower at ~55% fall
+    if(prog>=.52&&prog<.62&&!_notesCued.has(n.id)){_notesCued.add(n.id);spawnVCue(n,W,H);}
+    // Auto-miss
+    // Auto-miss: horror notes (hn) just fade out — no penalty, they are visual only
+    if(prog>1.3&&!n.missed){
+      n.missed=true;
+      if(!n.hn){G.miss++;G.combo=0;G.hp=Math.max(0,G.hp-10);updHUD();}
+      if(e)e.remove();
+    }
+  });
+
+  const pct=G.sdur>0?Math.min(el/G.sdur*100,100):0;
+  document.getElementById('gpF').style.width=pct+'%';
+  document.getElementById('hpF').style.height=G.hp+'%';
+  document.getElementById('hpF').style.background=G.hp>60?'linear-gradient(0deg,#3d5c42,#8aab90)':G.hp>30?'linear-gradient(0deg,#7a5c20,#c4a050)':'linear-gradient(0deg,#6a1a28,#b34a4a)';
+
+  if(G.hp<=0){G.running=false;stopAudio();clearInterval(window._corr);clearTimeout(idleTimer);trigDeath();return;}
+  const allDone=G.notes.every(n=>n.hit||n.missed);
+  const tUp=abuf?!aplaying&&el>2:el>G.sdur+1;
+  if((allDone||tUp)&&el>1.5){G.running=false;stopAudio();clearInterval(window._corr);clearTimeout(idleTimer);showRes();return;}
+  G.aid=requestAnimationFrame(tick);
+}
+
+function kd(lane,dn){
+  const pod=document.getElementById('kp'+lane);
+  const tgt=swappedControls?(lane===0?2:lane===2?0:lane===1?3:1):lane;
+  if(dn){pod.classList.add('pressed');resetIdleTimer();hitLane(tgt);}
+  else pod.classList.remove('pressed');
+}
+function hitLane(lane){
+  if(!G.running)return;
+  const el=(performance.now()-G.sms)/1000,sc=document.getElementById('gsc'),H=sc.offsetHeight,hY=H-5;
+  let bn=null,bd=Infinity;
+  G.notes.forEach(n=>{
+    if(n.hit||n.missed||n.lane!==lane||n.hn)return; // hn notes are visual-only, skip entirely
+    const prog=(el-(n.t-n.spd/1000))/(n.spd/1000);const d=Math.abs(prog*hY-hY);if(d<bd){bd=d;bn=n;}
+  });
+  if(!bn)return;
+  let v,pts;
+  // Hit windows: distance from hit zone in pixels
+  // Wider = more forgiving. Previous: 48/92. New: 72/140.
+  if(bd<72){v='p';pts=300;G.perf++;G.combo++;G.hp=Math.min(100,G.hp+3);}
+  else if(bd<140){v='g';pts=150;G.good++;G.combo++;G.hp=Math.min(100,G.hp+1);}
+  else{v='m';pts=0;G.miss++;G.combo=0;G.hp=Math.max(0,G.hp-8);}
+  if(v!=='m'){bn.hit=true;G.mc=Math.max(G.mc,G.combo);G.score+=pts+(G.combo>8?G.combo*8:0);}
+  else bn.missed=true;
+  const nel=document.getElementById('n'+bn.id);if(nel)nel.remove();
+  const dv=G.fake&&v==='m'?'p':G.fake&&v==='p'?'m':v;
+  bloom(lane,dv);
+  // Update integrity using real verdict (before fake flip)
+  updateIntegrity(v);
+  updHUD();
+}
+function bloom(lane,v){
+  const sc=document.getElementById('gsc'),W=sc.offsetWidth;
+  const e=document.createElement('div');
+  e.className=`hb hb${v}`;e.textContent=v==='p'?'✦':v==='g'?'·':'×';
+  e.style.left=(LXFR[lane]*W)+'px';e.style.bottom='13px';
+  document.getElementById('nL').appendChild(e);setTimeout(()=>e.remove(),680);
+  // Particle burst on Perfect
+  if(v==='p'){spawnParticles(lane,W,document.getElementById('gsc').offsetHeight);}
+  // Combo milestone burst
+  if(G.combo>0&&G.combo%15===0){spawnComboBurst();}
+}
+function spawnParticles(lane,W,H){
+  const pl=document.getElementById('partLayer');if(!pl)return;
+  const cx=LXFR[lane]*W,cy=H-10;
+  const cols=['#e8b4c0','#c8d4b0','#c8b4e0','#f0d4b0'];
+  for(let i=0;i<8;i++){
+    const p=document.createElement('div');p.className='hit-particle';
+    const ang=(i/8)*Math.PI*2;
+    const dist=28+Math.random()*22;
+    const px=Math.cos(ang)*dist+'px';
+    const py=Math.sin(ang)*dist+'px';
+    p.style.cssText=`left:${cx-2}px;bottom:${H-cy-2}px;background:${cols[i%cols.length]};--px:${px};--py:${py};animation-duration:${380+Math.random()*180}ms;box-shadow:0 0 4px ${cols[i%cols.length]};`;
+    pl.appendChild(p);setTimeout(()=>p.remove(),600);
+  }
+}
+function spawnComboBurst(){
+  const sc=document.getElementById('gsc');if(!sc)return;
+  const e=document.createElement('div');e.className='combo-burst';
+  e.textContent=G.combo+'×';e.style.fontSize=clamp(G.combo)+'rem';
+  sc.appendChild(e);setTimeout(()=>e.remove(),800);
+}
+function clamp(combo){return Math.min(1.8,0.9+combo*.02);}
+
+function updHUD(){
+  document.getElementById('gSc').textContent=G.score.toLocaleString();
+  document.getElementById('gCb').textContent=G.combo>1?G.combo+'× chain':'';
+  updateHeartbeat();
+}
+
+/* ══════════════════════════════════════════════
+   DEATH
+══════════════════════════════════════════════ */
+const DEVS=[
+  {e:'☽',t:'YOU MISSED SOMETHING.',s:'The archive does not forgive incomplete memories.\nThe Cut has entered through the gap you left.'},
+  {e:'◈',t:'THE PERFORMER TAKES OVER.',s:'Your timing was wrong.\nIt found the space between your notes and stepped inside.'},
+  {e:'▲',t:'THE ARCHIVIST SAW.',s:'Every miss is a memory lost.\nYou have lost too many.'},
+  {e:'⬡',t:'YOU BECAME PART OF IT.',s:'The archive absorbed your silence.\nYour session is a permanent entry now.'},
+];
+function trigDeath(){
+  // Store this session as "consumed" — will echo in next playthrough
+  storeConsumedSession();
+  // Abyss + 3rd listen → fake crash instead
+  if(curDiff==='abyss'&&selSong&&(replayCounts[selSong.id]||0)>=2&&!fakeCrashFired){
+    document.getElementById('gplay').style.filter='contrast(0) brightness(0)';
+    setTimeout(()=>{document.getElementById('gplay').style.filter='';trigFakeCrash();},820);
+    return;
+  }
+  const ev=DEVS[Math.floor(Math.random()*DEVS.length)];
+  document.getElementById('dEnt').textContent=ev.e;
+  document.getElementById('dT').textContent=ev.t;
+  document.getElementById('dS').textContent=ev.s;
+  document.getElementById('dC').textContent=selSong?.clue||'';
+  document.getElementById('gplay').style.filter='contrast(0) brightness(0)';
+  if(selSong){if(!S.grades[selSong.id]||S.grades[selSong.id]==='F'){S.grades[selSong.id]='F';}saveState();}
+  setTimeout(()=>{document.getElementById('gplay').style.filter='';show('death');},820);
+}
+function fromDeath(toHub){if(toHub)goHub();else{if(selSong)openSel(curCh);}}
+
+/* ══════════════════════════════════════════════
+   RESULTS + STORY UNLOCK
+══════════════════════════════════════════════ */
+const CVD={S:'memory fully reconstructed',A:'memory recovered',B:'memory partially recovered',C:'memory fragmented',D:'memory nearly lost',F:'memory consumed'};
+function showRes(){
+  const tot=G.notes.length,acc=tot>0?(G.perf+G.good)/tot*100:0;
+  let gr='D';if(acc>=95)gr='S';else if(acc>=85)gr='A';else if(acc>=70)gr='B';else if(acc>=55)gr='C';
+
+  if(selSong){
+    const ord=['S','A','B','C','D','F'];const prev=S.grades[selSong.id];
+    if(!prev||ord.indexOf(gr)<ord.indexOf(prev))S.grades[selSong.id]=gr;
+    if(!S.completedSongs.includes(selSong.id))S.completedSongs.push(selSong.id);
+    const chSongs={willow:['w1','w2','w3'],willower:['wr1','wr2','wr3'],willowest:['wi1','wi2','wi3']};
+    Object.entries(chSongs).forEach(([c,ids])=>{if(ids.every(id=>S.completedSongs.includes(id))&&!S.completedChapters.includes(c))S.completedChapters.push(c);});
+    unlockFragments(selSong.id,gr);
+    checkEndingUnlock();
+    saveState();checkNewBadge();
+  }
+
+  const el=document.getElementById('rGr');el.textContent=gr;el.className='rg g'+gr.toLowerCase();
+  document.getElementById('rVd').textContent=CVD[gr]||'memory lost';
+  document.getElementById('rP').textContent=G.perf;document.getElementById('rG').textContent=G.good;
+  document.getElementById('rM').textContent=G.miss;document.getElementById('rCb').textContent=G.mc;
+  document.getElementById('rSc2').textContent=G.score.toLocaleString();document.getElementById('rAc').textContent=Math.round(acc)+'%';
+
+  // Truth vs Performance banner
+  const tp=TRUTH_PERF[gr];
+  const tpb=document.getElementById('tpBanner');
+  if(tp&&tpb){
+    tpb.style.display='';
+    document.getElementById('tpType').textContent=tp.type;
+    document.getElementById('tpText').innerHTML=tp.text;
+    tpb.style.borderColor=gr==='B'?'rgba(138,171,144,.35)':gr==='S'||gr==='A'?'rgba(200,168,96,.25)':'rgba(139,26,42,.18)';
+  }
+
+  // Story reveal
+  const sr=document.getElementById('stReveal'),st=document.getElementById('srTxt'),sl=document.getElementById('srLabel');
+  if(selSong&&gr!=='F'&&sr&&st&&sl){
+    sr.style.display='';
+    sl.textContent=gr==='S'?'evidence recovered':gr==='A'?'evidence recovered':gr==='B'?'fragment — handle with care':gr==='C'?'partial fragment — reliability uncertain':'trace — heavily distorted';
+
+    // False memory layer override
+    const layer=getMemoryLayer(selSong.id);
+    let storyTxt;
+    if(layer==='corrupted'){
+      storyTxt='This memory has been reconstructed too many times. <span>What you are reading now may be fabricated by the archive.</span> The truth is still in there. Somewhere.';
+      sl.textContent='corrupted memory — layer 3';
+    }else if(layer==='hidden'&&(gr==='S'||gr==='A'||gr==='B')){
+      storyTxt=(selSong.storyGrade?.[gr]||selSong.clue)+' <span>This is the second layer. Something was hidden in the original.</span>';
+      sl.textContent='hidden layer — layer 2';
+    }else{
+      storyTxt=selSong.storyGrade?.[gr]||selSong.storyUnlock?.text||selSong.clue;
+    }
+    st.innerHTML=storyTxt;
+    if((gr==='S'||gr==='A')&&selSong.hidden)st.innerHTML+=`<span class="sr-hidden">${selSong.hidden}</span>`;
+
+    // Unlock story log
+    if(selSong.storyUnlock&&(gr==='S'||gr==='A'||gr==='B')){
+      if(!S.unlockedStory[selSong.id]){S.unlockedStory[selSong.id]={grade:gr,text:selSong.storyUnlock.text};saveState();}
+    }
+
+    // Integrity note
+    const note=integrityNote();
+    if(note)st.innerHTML+=`<br><br><em style="font-size:.75rem;color:rgba(200,168,96,.55);letter-spacing:.08em;">${note}</em>`;
+  }else if(sr)sr.style.display='none';
+
+  drawHorror(document.getElementById('rcan'));
+  show('res');
+  updateCaseFile();
+
+  // Contradiction detection: fires after B+ on specific songs
+  if((gr==='B'||gr==='A'||gr==='S')&&selSong){
+    const hasCon=CONTRADICTIONS.find(c=>c.songId===selSong.id);
+    const done=S.completedContradictions&&S.completedContradictions.includes(selSong.id);
+    if(hasCon&&!done){
+      setTimeout(()=>triggerContradiction(selSong.id,correct=>{
+        if(correct&&!S.unlockedStory['contra_'+selSong.id]){S.unlockedStory['contra_'+selSong.id]=true;saveState();}
+      }),1800);
+    }
+  }
+}
+
+function unlockFragments(songId,grade){
+  const FM={w1:'f1',w2:'f2',w3:'f5',wr1:'f2',wr2:'f8',wr3:'f7',wi1:'f3',wi2:'f6',wi3:'f9'};
+  const fid=FM[songId];
+  if(fid&&(grade==='S'||grade==='A'||grade==='B')){if(!S.foundFragments.includes(fid)){S.foundFragments.push(fid);saveState();}}
+  if(songId==='wi1'&&(grade==='S'||grade==='A')&&!S.foundFragments.includes('f4')){S.foundFragments.push('f4');saveState();}
+}
+function checkEndingUnlock(){ENDINGS.forEach(e=>{if(e.conditionMet(S)&&!S.foundEndings.includes(e.id)){S.foundEndings.push(e.id);saveState();}});}
+function nextSong(){
+  const chSongs=SONGS[curCh]||[];if(!selSong){openSel(curCh);return;}
+  const idx=chSongs.findIndex(s=>s.id===selSong.id);
+  if(idx>=0&&idx<chSongs.length-1){selSong=chSongs[idx+1];startGame();}
+  else goHub();
+}
+function retryGame(){if(selSong)startGame();}
+
+/* ══════════════════════════════════════════════
+   ARCHIVE HUB
+══════════════════════════════════════════════ */
+function renderHub(){renderStoryLog();renderFragGrid();renderEndingsShelf();renderProgress();}
+function renderStoryLog(){
+  const el=document.getElementById('storyLog');if(!el)return;el.innerHTML='';
+  const allS=[...SONGS.willow,...SONGS.willower,...SONGS.willowest];
+  allS.forEach(s=>{
+    const g=S.grades[s.id],unlocked=S.unlockedStory[s.id];
+    const entry=document.createElement('div');
+    entry.className='story-entry'+(unlocked?' unlocked':'');
+    if(!g){entry.classList.add('locked');entry.innerHTML=`<div class="se-ch">${s.ch}</div><div class="se-t">${s.title}</div><div class="se-body">This memory has not been reconstructed.</div>`;}
+    else{
+      const txt=unlocked?unlocked.text:(s.storyGrade?.[g]||'Reconstruct this memory to recover more.');
+      entry.innerHTML=`<div class="se-ch">${s.ch}</div><div class="se-t">${s.title}<button class="se-play" onclick="replayFromHub('${s.id}')">▶ replay</button></div><div class="se-body${unlocked?' revealed':''}">${txt}</div>${g?`<span class="se-grade sg-${g.toLowerCase()}">${g}</span>`:''}`;
+    }
+    el.appendChild(entry);
+  });
+}
+function renderFragGrid(){
+  const el=document.getElementById('fragGrid');if(!el)return;el.innerHTML='';
+  FRAGMENTS.forEach(f=>{
+    const found=S.foundFragments.includes(f.id);
+    const d=document.createElement('div');d.className='frag'+(found?' found':'');
+    d.innerHTML=`<div class="frag-label">${f.label}</div><div class="frag-txt${found?'':' frag-hidden'}">${found?f.txt:''}</div>`;
+    el.appendChild(d);
+  });
+}
+function renderEndingsShelf(){
+  const el=document.getElementById('endingsShelf');if(!el)return;el.innerHTML='';
+  ENDINGS.forEach(e=>{
+    const found=S.foundEndings.includes(e.id);
+    const card=document.createElement('div');card.className='ending-card'+(found?' found':' locked-end');
+    if(found){card.innerHTML=`<div class="ec-num">${e.num}</div><div class="ec-t">${e.title}</div><div class="ec-cond">${e.condition}</div><div class="ec-body">${e.body.substring(0,200)}... <button style="background:none;border:none;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.8rem;color:var(--red);cursor:pointer;" onclick="showEnding('${e.id}')">read full ending →</button></div>`;}
+    else{card.innerHTML=`<div class="ec-num">${e.num}</div><div class="ec-t" style="opacity:.3">${e.title}</div><div class="ec-cond">${e.condition}</div><div class="ec-lock">not yet found</div>`;}
+    el.appendChild(card);
+  });
+}
+function renderProgress(){
+  const allS=[...SONGS.willow,...SONGS.willower,...SONGS.willowest];
+  const done=allS.filter(s=>S.grades[s.id]&&S.grades[s.id]!=='F').length;
+  const pct=Math.round(done/allS.length*100);
+  const pf=document.getElementById('progFill');if(pf)pf.style.width=pct+'%';
+  const pp=document.getElementById('progPct');if(pp)pp.textContent=pct+'%';
+}
+function replayFromHub(songId){
+  const allS=[...SONGS.willow,...SONGS.willower,...SONGS.willowest];
+  const s=allS.find(x=>x.id===songId);if(!s)return;
+  selSong=s;
+  curCh=s.id.startsWith('wi')&&!s.id.startsWith('wr')?'willowest':s.id.startsWith('wr')?'willower':'willow';
+  if(!horrorMode){lagMode=true;document.documentElement.classList.add('horror');horrorMode=true;ghostSchedule();}
+  startGame();
+}
+
+/* ══════════════════════════════════════════════
+   ENDING SCREEN
+══════════════════════════════════════════════ */
+function showEnding(id){
+  const e=ENDINGS.find(x=>x.id===id);if(!e)return;
+  document.getElementById('endNum').textContent=e.num;
+  document.getElementById('endTitle').textContent=e.title;
+  document.getElementById('endBody').innerHTML=e.body;
+  const ch=document.getElementById('endChoices');ch.innerHTML='';
+  e.choices.forEach(c=>{
+    const btn=document.createElement('button');btn.className='end-choice';btn.textContent=c.txt;
+    btn.onclick=()=>{document.getElementById('endResultTxt').innerHTML=c.result;document.getElementById('endResult').classList.add('show');ch.style.display='none';};
+    ch.appendChild(btn);
+  });
+  document.getElementById('endResult').classList.remove('show');
+  drawHorror(document.getElementById('endC'));show('ending');
+}
+
+/* ══════════════════════════════════════════════
+   CASE FILE + SECRET FILE
+══════════════════════════════════════════════ */
+function updateCaseFile(){
+  const allS=[...SONGS.willow,...SONGS.willower,...SONGS.willowest];
+  const done=allS.filter(s=>S.grades[s.id]&&S.grades[s.id]!=='F').length;
+  const cr=document.getElementById('cfResolved');if(cr)cr.textContent=done+'/9';
+  const cfM=document.getElementById('cfMethod');if(cfM&&done>=6)cfM.innerHTML='Voice extraction via the silence between notes. The Performer completes the process.';
+  const cfMo=document.getElementById('cfMotive');if(cfMo&&S.completedInterrogs&&S.completedInterrogs.length>=2)cfMo.innerHTML='Self-perpetuation. The archive sustains itself on archived voices.';
+  if(S.secretUnlocked){const sf=document.getElementById('secretFile');if(sf&&!sf.classList.contains('unlocked'))sf.classList.add('unlocked');}
+}
+function tryOpenSecret(){
+  const sf=document.getElementById('secretFile');if(!sf||sf.classList.contains('unlocked'))return;
+  const deaths=S.grades?Object.values(S.grades).filter(g=>g==='F').length:0;
+  const bG=S.grades?Object.values(S.grades).filter(g=>['B','A','S'].includes(g)).length:0;
+  if(bG>=3&&deaths>=1){sf.classList.add('unlocked');if(!S.secretUnlocked){S.secretUnlocked=true;saveState();}if(!S.foundFragments.includes('f3')){S.foundFragments.push('f3');saveState();}renderHub();}
+  else{sf.style.borderColor='rgba(139,26,42,.6)';setTimeout(()=>sf.style.borderColor='',600);}
+}
+
+/* ══════════════════════════════════════════════
+   INTERROGATION SYSTEM
+══════════════════════════════════════════════ */
+function openIntrog(){
+  const done=Object.keys(S.grades).filter(k=>S.grades[k]&&S.grades[k]!=='F').length;
+  let ig=INTERROGATIONS[0];
+  if(done>=6)ig=INTERROGATIONS[2];else if(done>=3)ig=INTERROGATIONS[1];
+  if(!S.completedInterrogs)S.completedInterrogs=[];
+  const unseen=INTERROGATIONS.find(x=>!S.completedInterrogs.includes(x.id));
+  if(S.completedInterrogs.includes(ig.id)&&unseen)ig=unseen;
+  document.getElementById('igEnt').textContent=ig.entity;
+  document.getElementById('igTitle').textContent=ig.title;
+  document.getElementById('igSub').textContent=ig.sub;
+  document.getElementById('igResult').classList.remove('show');
+  document.getElementById('igClose').style.display='none';
+  const ch=document.getElementById('igChoices');ch.innerHTML='';
+  ig.choices.forEach(c=>{
+    const btn=document.createElement('button');btn.className='ig-choice';btn.textContent=c.txt;
+    btn.onclick=()=>{
+      ch.innerHTML='';
+      document.getElementById('igResultTxt').innerHTML=c.result.replace(/\n/g,'<br>');
+      document.getElementById('igResult').classList.add('show');
+      document.getElementById('igClose').style.display='block';
+      if(c.jumpscare){const ig2=document.getElementById('introg');ig2.style.filter='invert(1) brightness(3)';setTimeout(()=>{ig2.style.filter='';},120);setTimeout(()=>{ig2.style.filter='contrast(0) brightness(0)';},200);setTimeout(()=>{ig2.style.filter='';},350);}
+      if(c.correct&&c.unlock){if(!S.foundFragments.includes(c.unlock)){S.foundFragments.push(c.unlock);saveState();}}
+      if(!S.completedInterrogs.includes(ig.id)){S.completedInterrogs.push(ig.id);saveState();}
+      if(c.correct)updateCaseFile();
+    };
+    ch.appendChild(btn);
+  });
+  document.getElementById('introg').classList.add('open');
+}
+function closeIntrog(){document.getElementById('introg').classList.remove('open');renderHub();}
+
+/* ══════════════════════════════════════════════
+   GHOST BUTTON
+══════════════════════════════════════════════ */
+const GMSGS=['you didn\'t click this','do not read this','it is already too late','close the archive','are you sure you\'re alone','it knows you\'re here','stop','this is not a game','she\'s still in here','who invited you','the archive is listening','you are being recorded'];
+function ghostInit(){}
+function ghostSchedule(){
+  clearInterval(window._ghost);
+  window._ghost=setInterval(()=>{
+    if(!horrorMode)return;
+    const b=document.getElementById('gbt');if(!b)return;
+    b.textContent=GMSGS[Math.floor(Math.random()*GMSGS.length)];
+    b.style.left=(8+Math.random()*72)+'%';b.style.top=(8+Math.random()*72)+'%';
+    b.style.display='block';setTimeout(()=>b.style.display='none',3400);
+  },11000+Math.random()*14000);
+}
+
+/* ══════════════════════════════════════════════
+   UI MUTATIONS (horror mode hover text changes)
+══════════════════════════════════════════════ */
+const BTN_MUTATIONS={'Again':['Again?','Once more?','You can\'t stop now'],'Archive':['The archive','It\'s watching','go back'],'Next Memory':['Next?','Are you ready','it\'s different now'],'leave':['Stay','don\'t go','you can\'t'],'return to archive':['go back','it\'s waiting','return']};
+function initUIMutations(){
+  document.querySelectorAll('.rbtn,.end-btn,.dbb,.h-btn').forEach(btn=>{
+    const orig=btn.textContent.trim();
+    btn.addEventListener('mouseenter',()=>{
+      if(!horrorMode)return;
+      const variants=BTN_MUTATIONS[orig];
+      if(variants&&Math.random()<.45){
+        const pick=variants[Math.floor(Math.random()*variants.length)];
+        btn.setAttribute('data-orig',orig);
+        const tn=Array.from(btn.childNodes).find(n=>n.nodeType===3);
+        if(tn){tn.textContent=pick;btn.style.fontStyle='italic';btn.style.opacity='.8';}
+      }
+    });
+    btn.addEventListener('mouseleave',()=>{
+      const stored=btn.getAttribute('data-orig');
+      if(stored){const tn=Array.from(btn.childNodes).find(n=>n.nodeType===3);if(tn){tn.textContent=stored;btn.style.fontStyle='';btn.style.opacity='';}btn.removeAttribute('data-orig');}
+    });
+  });
+}
+
+/* ══════════════════════════════════════════════
+   INTRO / MANUAL SCREEN
+══════════════════════════════════════════════ */
+let _introCB = null;
+function showIntro(cb){
+  _introCB = cb;
+  show('introScreen');
+}
+function proceedFromIntro(){
+  const cb = _introCB; _introCB = null;
+  if(cb) cb(); else goHome();
+}
+
+/* ══════════════════════════════════════════════
+   CONSUMED — F GRADE PLAYBACK SYSTEM
+   When player gets F, store timing fingerprint.
+   When they start any song after an F, play back
+   a distorted echo of their previous session.
+══════════════════════════════════════════════ */
+const consumedSessions = [];   // stores {songTitle, missPattern, timestamp}
+let pendingConsumedPlay = null; // set to a session to play on next startGame
+
+function storeConsumedSession(){
+  if(!selSong) return;
+  // Create a "fingerprint" from miss timing ratios
+  const total = G.notes.length;
+  const missRatio = total > 0 ? G.miss/total : 1;
+  const session = {
+    songTitle: selSong.title,
+    missRatio,
+    timestamp: Date.now(),
+    pattern: G.notes.slice(0,8).map(n=>n.missed?1:0), // first 8 notes
+  };
+  consumedSessions.push(session);
+  if(consumedSessions.length > 3) consumedSessions.shift(); // keep last 3
+  // Schedule playback on next session
+  if(consumedSessions.length >= 1){
+    pendingConsumedPlay = consumedSessions[consumedSessions.length-1];
+  }
+}
+
+function playConsumedEcho(session){
+  if(!session || !actx) return;
+  // Create oscillator-based distorted playback using Web Audio
+  // Represents "their session" as haunted tonal fragments
+  const osc = actx.createOscillator();
+  const gain = actx.createGain();
+  const distort = actx.createWaveShaper();
+  // Distortion curve
+  const curve = new Float32Array(256);
+  for(let i=0;i<256;i++){const x=(i*2/255)-1;curve[i]=x<0?-Math.pow(-x,.8):Math.pow(x,.8)*0.6;}
+  distort.curve = curve;
+  osc.connect(distort); distort.connect(gain); gain.connect(actx.destination);
+  osc.frequency.setValueAtTime(180, actx.currentTime);
+  osc.frequency.linearRampToValueAtTime(160, actx.currentTime+1.2);
+  gain.gain.setValueAtTime(0, actx.currentTime);
+  gain.gain.linearRampToValueAtTime(0.04, actx.currentTime+0.3);
+  gain.gain.linearRampToValueAtTime(0.04, actx.currentTime+1.0);
+  gain.gain.linearRampToValueAtTime(0, actx.currentTime+1.5);
+  osc.start(actx.currentTime);
+  osc.stop(actx.currentTime+1.5);
+  // Show consumed overlay
+  const cm = document.getElementById('coMsg');
+  const cs = document.getElementById('coSub');
+  if(cm) cm.textContent = `"${session.songTitle}" — incomplete`;
+  if(cs) cs.textContent = `Someone who played this song before you did not finish it.\nThey missed ${Math.round(session.missRatio*100)}% of the notes.\nThe archive kept the silence they left.`;
+  const co = document.getElementById('consumedOverlay');
+  if(co) co.classList.add('open');
+}
+
+function closeConsumed(){
+  const co = document.getElementById('consumedOverlay');
+  if(co) co.classList.remove('open');
+}
+
+/* ══════════════════════════════════════════════
+   BACKGROUND SHADOW CHARACTER — Melatonin style
+   A second figure appears at edge of scene, disappears if noticed
+══════════════════════════════════════════════ */
+let shadowVisible = false, shadowTimer = null;
+
+function startShadowSystem(){
+  clearTimeout(shadowTimer);
+  // Schedule a shadow appearance
+  shadowTimer = setTimeout(()=>{
+    if(!G.running) return;
+    spawnShadowChar();
+  }, 8000 + Math.random()*12000);
+}
+
+function spawnShadowChar(){
+  if(!G.running) return;
+  const sc = document.getElementById('gsc'); if(!sc) return;
+  // Remove old shadow
+  sc.querySelectorAll('.shadow-char').forEach(e=>e.remove());
+  const s = document.createElement('div');
+  s.className = 'shadow-char';
+  // Place at edge — opposite side of player character
+  const side = Math.random() < 0.5 ? '8%' : '82%';
+  s.style.left = side;
+  s.style.bottom = '20px';
+  s.textContent = '🌸'; // silhouetted — CSS makes it black
+  sc.appendChild(s);
+  // Fade in
+  requestAnimationFrame(()=>{ requestAnimationFrame(()=>{ s.classList.add('visible'); }); });
+  shadowVisible = true;
+  // Disappear after 3.5s (before player can "look directly")
+  setTimeout(()=>{
+    s.classList.add('fading');
+    setTimeout(()=>{ s.remove(); shadowVisible=false; }, 700);
+    // Schedule next appearance
+    if(G.running) startShadowSystem();
+  }, 3500);
+}
+
+/* ══════════════════════════════════════════════
+   CONTRADICTION DETECTION SYSTEM
+   Fires after B-grade songs with contradicting story clues
+══════════════════════════════════════════════ */
+const CONTRADICTIONS = [
+  {
+    songId: 'w2',
+    title: 'Something is inconsistent here.',
+    sub: 'Read the statements below. One contradicts the others. Mark it.',
+    statements: [
+      {txt: '"The backup vocal was recorded three weeks after the singer vanished."', correct: false},
+      {txt: '"The second voice is slightly off-key, as if still learning her patterns."', correct: false},
+      {txt: '"The second voice anticipated her next lyric before she sang it."', correct: true,
+       explanation: 'If the second voice was learning from the original, it could not anticipate what came next. But it did. It already knew the song. It was not learning. It was remembering.'},
+      {txt: '"The Performer enters archives through repeated listening."', correct: false},
+    ]
+  },
+  {
+    songId: 'wr2',
+    title: 'These cannot all be true.',
+    sub: 'The archive has given you contradicting information. One statement is wrong. Mark it.',
+    statements: [
+      {txt: '"The Archivist recorded ambient audio since before first login."', correct: false},
+      {txt: '"The whisper at 2:14 is not a recording — it is live."', correct: false},
+      {txt: '"The Archivist uses your voice, which it has never heard before."', correct: true,
+       explanation: 'If the Archivist uses your voice, and has been recording since before you logged in, then it already had your voice before you arrived. "Never heard before" cannot be true. You were already in the archive.'},
+      {txt: '"Dr. Vael described the Archivist as patient beyond comprehension."', correct: false},
+    ]
+  },
+  {
+    songId: 'wi3',
+    title: 'One of these is the lie the archive planted.',
+    sub: 'You are close to the truth. One statement cannot coexist with the others.',
+    statements: [
+      {txt: '"You built the archive before your disappearance."', correct: false},
+      {txt: '"The archive anticipated you before you arrived."', correct: false},
+      {txt: '"You had no memory of building the archive when you entered it."', correct: false},
+      {txt: '"The archive was built to trap others, not to preserve yourself."', correct: true,
+       explanation: 'Every other clue points to the archive being built for preservation — for Mara, for memory, for love. "Trap" is the archive\'s reframing of what you built. It is what the archive became, not what you intended.'},
+    ]
+  },
+];
+
+let _contradictCB = null;
+let markedContradiction = null;
+
+function triggerContradiction(songId, onComplete){
+  const c = CONTRADICTIONS.find(x=>x.songId===songId);
+  if(!c){ onComplete&&onComplete(false); return; }
+  if(S.completedContradictions && S.completedContradictions.includes(songId)){ onComplete&&onComplete(false); return; }
+  _contradictCB = onComplete;
+  markedContradiction = null;
+  document.getElementById('cpTitle').textContent = c.title;
+  document.getElementById('cpSub').textContent = c.sub;
+  document.getElementById('cpResult').classList.remove('show');
+  document.getElementById('cpResult').textContent = '';
+  const sl = document.getElementById('cpStatements'); sl.innerHTML = '';
+  c.statements.forEach((st,i)=>{
+    const d = document.createElement('div');
+    d.className = 'cp-stmt'; d.dataset.idx = i;
+    d.innerHTML = `<div class="cp-marker"></div><span>${st.txt}</span>`;
+    d.onclick = ()=>{
+      sl.querySelectorAll('.cp-stmt').forEach(s2=>s2.classList.remove('marked'));
+      d.classList.add('marked');
+      markedContradiction = i;
+    };
+    sl.appendChild(d);
+  });
+  document.getElementById('contradictPanel').classList.add('open');
+}
+
+function submitContradiction(){
+  if(markedContradiction === null) return;
+  const panel = document.getElementById('contradictPanel');
+  const songId = Object.keys({w2:'w2',wr2:'wr2',wi3:'wi3'}).find(k=>
+    CONTRADICTIONS.find(c=>c.songId===k) &&
+    document.getElementById('cpStatements').children.length > 0
+  );
+  // Find which contradiction is showing
+  const showing = CONTRADICTIONS.find(c=>
+    document.getElementById('cpTitle').textContent === c.title
+  );
+  if(!showing) return;
+  const chosen = showing.statements[markedContradiction];
+  const sl = document.getElementById('cpStatements');
+  // Reveal correct/wrong
+  Array.from(sl.children).forEach((d,i)=>{
+    d.classList.remove('marked');
+    if(showing.statements[i].correct) d.classList.add('correct');
+    else if(i===markedContradiction) d.classList.add('wrong');
+  });
+  const res = document.getElementById('cpResult');
+  if(chosen.correct){
+    res.innerHTML = `<strong style="color:#a8d088;font-style:normal;">Correct.</strong> ${chosen.explanation}`;
+    if(!S.foundFragments.includes('f9')){ S.foundFragments.push('f9'); saveState(); }
+    if(!S.completedContradictions) S.completedContradictions=[];
+    S.completedContradictions.push(showing.songId); saveState();
+  } else {
+    res.innerHTML = `<strong style="color:var(--rose);font-style:normal;">Incorrect.</strong> The archive noted your answer. Try again — but this session will remember your error.`;
+  }
+  res.classList.add('show');
+  // Change submit to close
+  setTimeout(()=>{
+    document.querySelector('#contradictPanel .cp-btns .cp-btn').textContent='Close';
+    document.querySelector('#contradictPanel .cp-btns .cp-btn').onclick=()=>dismissContradiction();
+    if(_contradictCB){ _contradictCB(chosen.correct); _contradictCB=null; }
+  }, 400);
+}
+
+function dismissContradiction(){
+  document.getElementById('contradictPanel').classList.remove('open');
+}
+
+/* ══════════════════════════════════════════════
+   DIRECTIONAL WHISPER — left / right / both
+   For headphone players
+══════════════════════════════════════════════ */
+const DIR_WHISPERS_L = ['she was here','do you hear that','on your left','something follows','left','the left side lies'];
+const DIR_WHISPERS_R = ['still watching','your right','it moved','behind you','the echo came back','right side wrong'];
+
+function triggerDirectionalWhisper(){
+  if(!horrorMode) return;
+  const side = Math.random() < 0.5 ? 'L' : 'R';
+  const pool = side==='L' ? DIR_WHISPERS_L : DIR_WHISPERS_R;
+  const msg = pool[Math.floor(Math.random()*pool.length)];
+  const el = document.getElementById('dirWhisper'+side);
+  if(!el) return;
+  el.textContent = msg;
+  el.style.display = 'block';
+  el.style.animation = 'none'; void el.offsetWidth; el.style.animation = '';
+  setTimeout(()=>el.style.display='none', 3800);
+  // Optionally also play a subtle stereo pan in Web Audio
+  if(actx && horrorMode){
+    try{
+      const osc = actx.createOscillator();
+      const panner = actx.createStereoPanner();
+      const g2 = actx.createGain();
+      panner.pan.value = side==='L' ? -0.9 : 0.9;
+      osc.frequency.value = 220 + Math.random()*80;
+      g2.gain.setValueAtTime(0, actx.currentTime);
+      g2.gain.linearRampToValueAtTime(0.025, actx.currentTime+0.4);
+      g2.gain.linearRampToValueAtTime(0, actx.currentTime+1.2);
+      osc.connect(panner); panner.connect(g2); g2.connect(actx.destination);
+      osc.start(actx.currentTime); osc.stop(actx.currentTime+1.3);
+    }catch(_){}
+  }
+}
+
+function startDirectionalWhisperLoop(){
+  clearInterval(window._dwLoop);
+  window._dwLoop = setInterval(()=>{
+    if(!horrorMode||!G.running) return;
+    if(Math.random()<0.3) triggerDirectionalWhisper();
+  }, 15000 + Math.random()*10000);
+}
+
+/* ══════════════════════════════════════════════
+   DON'T PLAY EASTER EGG
+   Idle on home screen for 20s → unlock hidden mode
+══════════════════════════════════════════════ */
+let dontPlayTimer = null;
+let dontPlayUnlocked = false;
+
+function startDontPlayTimer(){
+  clearTimeout(dontPlayTimer);
+  dontPlayTimer = setTimeout(()=>{
+    if(document.getElementById('home').classList.contains('active')){
+      triggerDontPlay();
+    }
+  }, 20000);
+}
+
+function triggerDontPlay(){
+  if(dontPlayUnlocked) return;
+  dontPlayUnlocked = true;
+  // Soft audio tone
+  if(actx){
+    try{
+      const o=actx.createOscillator(),g3=actx.createGain();
+      o.frequency.value=320;o.type='sine';
+      g3.gain.setValueAtTime(0,actx.currentTime);
+      g3.gain.linearRampToValueAtTime(0.05,actx.currentTime+1);
+      g3.gain.linearRampToValueAtTime(0,actx.currentTime+4);
+      o.connect(g3);g3.connect(actx.destination);
+      o.start(actx.currentTime);o.stop(actx.currentTime+4.5);
+    }catch(_){}
+  }
+  document.getElementById('dontPlay').classList.add('open');
+  // Unlock a special fragment
+  if(!S.foundFragments.includes('f7')){ S.foundFragments.push('f7'); saveState(); }
+}
+
+function closeDontPlay(){
+  document.getElementById('dontPlay').classList.remove('open');
+  // They interacted — restart timer won't re-trigger (dontPlayUnlocked stays true)
+}
+
+/* ══════════════════════════════════════════════
+   DYNAMIC FAKE CRASH — personalised text
+══════════════════════════════════════════════ */
+function trigFakeCrash(){
+  if(fakeCrashFired)return;fakeCrashFired=true;
+  const fc=document.getElementById('fakeCrash');if(!fc)return;
+  // Personalise the crash with song title / session context
+  const fcTitle = document.getElementById('fcTitle');
+  const fcSub = document.getElementById('fcSub');
+  if(fcTitle && selSong){
+    fcTitle.textContent = `"${selSong.title}" has stopped responding`;
+  }
+  if(fcSub && selSong){
+    fcSub.innerHTML = `your voice could not be recovered<br>the archive is retaining session data<br><br><span style="opacity:.35">session: ${selSong.id} · miss ratio: ${G.notes.length>0?Math.round(G.miss/G.notes.length*100):100}%</span><br><br>████████████████████<br><br>do not close this window`;
+  }
+  fc.classList.add('show');
+  setTimeout(()=>{
+    fc.classList.remove('show');fakeCrashFired=false;
+    document.body.style.filter='invert(1) brightness(2)';
+    setTimeout(()=>{document.body.style.filter='';trigDeath();},180);
+  },3800);
+}
+
+/* ══════════════════════════════════════════════
+   INTEGRATION HOOKS (called from within existing fns via flags)
+   No function shadowing — all hooks use flags/callbacks
+══════════════════════════════════════════════ */
+// enterHorror integration: first-time intro gate
+// We add a pre-check inside enterHorror directly below
+// startGame integration: pendingConsumedPlay + shadow + directional whisper
+// trigDeath integration: storeConsumedSession
+// showRes integration: contradiction trigger
+// These are called as direct inline calls — see modified versions of each fn below
+
+// Home screen idle detection
+document.addEventListener('click',()=>{ if(document.getElementById('home').classList.contains('active')) startDontPlayTimer(); });
+document.addEventListener('mousemove',()=>{ if(document.getElementById('home').classList.contains('active')) startDontPlayTimer(); },{ passive:true });
+// Start timer immediately after load
+window.addEventListener('load',()=>{ setTimeout(startDontPlayTimer, 500); });
+const KM={
+  // WASD
+  'a':0,'s':1,'w':2,'d':3,
+  // Arrow keys
+  'ArrowLeft':0,'ArrowDown':1,'ArrowUp':2,'ArrowRight':3,
+};
+document.addEventListener('keydown',e=>{
+  if(e.key in KM&&!e.repeat){e.preventDefault();kd(KM[e.key],true);}
+  if(e.key==='Escape'){
+    if(document.getElementById('introg').classList.contains('open')){closeIntrog();return;}
+    if(G.running){G.running=false;stopAudio();clearInterval(window._corr);clearTimeout(idleTimer);goHub();}
+  }
+});
+document.addEventListener('keyup',e=>{if(e.key in KM)kd(KM[e.key],false);});
+</script>
+</body>
+</html>
