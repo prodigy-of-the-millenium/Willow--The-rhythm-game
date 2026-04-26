@@ -58,4 +58,6 @@ __Case File__ — live investigation panel in the Archive Hub showing Victim, Su
 
 __Mic Whisper__ — requests mic permission silently on first gameplay. If it detects a loud sound (peak above threshold), it flashes a message like "i heard that." or "the archive recorded that." at the bottom of screen. Fails gracefully if mic is denied.
 
-GitHub Pages audio — loadPlay() now supports a path field on any song object (e.g. path: './audio/song.m4a'). Add that field to the song data alongside your /audio/ folder in the repo and it loads on click. Console prints a clear diagnostic if the path is wrong.
+GitHub Pages audio — loadPlay() now supports a path field on any song object (e.g. path: './audio/song.m4a'). Add that field to the song data alongside your /audio/ folder in the repo and it loads on click. Console prints a clear diagnostic if the path is wrong. 
+
+Here is the link for the game : https://prodigy-of-the-millenium.github.io/Willow--The-rhythm-game/
